@@ -104,7 +104,7 @@ int hammingDistance(const std::string& s1, const std::string& s2) {
     return distance;
 }
 
-
+/*
 // Función principal
 int main() {
     std::unordered_map<std::string, int> substring_to_index;
@@ -127,4 +127,4 @@ int main() {
     }
 
     return 0;
-}
+}*/

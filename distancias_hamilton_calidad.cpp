@@ -11,7 +11,7 @@
 
 // Función para generar todos los substrings de tamaño 3 con máxima distancia de Hamming entre substrings consecutivos
 void generateSubstrings(std::unordered_map<std::string, int>& substring_to_index, std::unordered_map<int, std::string>& index_to_substring) {
-    std::vector<char> symbols = {'a', 't', 'c', 'g'};
+    std::vector<char> symbols = {'A', 'T', 'C', 'G'};
     std::vector<std::string> substrings(64);
 
     // Generar la secuencia de Gray y convertirla en substrings
@@ -76,7 +76,36 @@ int hammingDistance(const std::string& s1, const std::string& s2) {
     }
     return distance;
 }
+vector<int> compressString(const string& input, const unordered_map<string, int>& substring_to_index) {
+    vector<int> compressed;
+    for (size_t i = 0; i < input.size(); i += 3) {
+        string substring = input.substr(i, 3);
+        int position = findSubstringPosition(substring_to_index, substring);
+        if (position != -1) {
+            compressed.push_back(position);
+        } else {
+            cerr << "Error: Substring no encontrado en el mapa: " << substring << endl; // Depuración
+            throw invalid_argument("Substring no encontrado en el mapa.");
+        }
+    }
+    return compressed;
+}
 
+std::vector<int> calculateColumnMeans(const std::vector<std::vector<int>>& positions) {
+    int num_columns = positions[0].size();
+    std::vector<int> column_means(num_columns, 0);
+
+    for (int j = 0; j < num_columns; ++j) {
+        int sum = 0;
+        for (const auto& row : positions) {
+            sum += row[j];
+        }
+        int mean = sum / positions.size();
+        column_means[j] = (mean % 64 + 32) % 64; 
+    }
+
+    return column_means;
+}
 int distancia_aritmetica(int s1, int s2) {
     int s1a = (s1 / 16);
     int s2a = (s2 / 16);
@@ -137,7 +166,7 @@ std::string generateRandomSubstring() {
     }
     return result;
 }
-
+/*
 // Función principal
 int main() {
     srand(time(0)); // Inicializar la semilla para la generación de números aleatorios
@@ -169,4 +198,4 @@ int main() {
 
     std::cout << "Todas las pruebas pasaron, las distancias son equivalentes.\n";
     return 0;
-}
+}*/

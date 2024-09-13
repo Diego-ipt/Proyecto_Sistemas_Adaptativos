@@ -13,7 +13,7 @@ int sumatotal(const std::vector<double>& datos) {
     // Calcular la media
     return suma;
 }
-
+/*
 int main() {
     std::vector<double> datos = {64,62,63}; // Ejemplo de datos
 
@@ -24,4 +24,4 @@ int main() {
     std::cout << "El punto medio entre los datos es: " << punto1<<" y "<< punto2;
 
     return 0;
-}
+}*/
