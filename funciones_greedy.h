@@ -110,7 +110,7 @@ vector<int> compressString(const string& input, const unordered_map<string, int>
 
 
 //Función para calcular la media de las columnas
-vector<int> calculateColumnMeans(const vector<vector<int>>& positions) {
+vector<int> calculateColumnMeans(const vector<vector<int>>& positions, double alpha = 1.0) {
     int num_columns = positions[0].size();
     vector<int> column_means(num_columns, 0);
 
@@ -120,14 +120,20 @@ vector<int> calculateColumnMeans(const vector<vector<int>>& positions) {
             sum += row[j];
         }
         int mean = sum / positions.size();
-        column_means[j] = (mean + 32) % 64; 
+        // Generar numero aleatorio entre 0 y 1
+        double random_value = static_cast<double>(rand()) / RAND_MAX;
+        if(random_value < alpha) {
+            column_means[j] = mean;
+        } else {
+            column_means[j] = (mean + 32) % 64; 
+        }
     }
 
     return column_means;
 }
 
 string greedyHeuristicFFMS(const vector<string>& dataset, int long_cadenas, const unordered_map<string,int>& substring_to_index, 
-const unordered_map<int, string>& index_to_substring, int threshold){
+const unordered_map<int, string>& index_to_substring, int threshold, double alpha = 1.0) {
 
     // matriz de posiciones de los substrings
     vector<vector<int>> positions;
@@ -136,8 +142,8 @@ const unordered_map<int, string>& index_to_substring, int threshold){
     for(const auto& str: dataset){
         positions.push_back(compressString(str, substring_to_index));
     }
-    // Calcular los promedios de las columnas
-    vector<int> column_means = calculateColumnMeans(positions);
+    // Calcular los promedios de las columnas, aqui se aplica la aleatoriedad con alpha
+    vector<int> column_means = calculateColumnMeans(positions, alpha);
 
     string solution_string;
     for(int pos: column_means){
