@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
     vector<string> input_data = loadInputData(inputFileName);
     double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
-    double alpha;
+    double alpha= 1.0;
 
     // Leer parametro opcional -alpha
     for (int i = 5; i < argc; ++i) {
