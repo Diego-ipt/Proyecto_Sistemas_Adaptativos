@@ -68,7 +68,7 @@ int hammingDistance(const string& s1, const string& s2) {
         throw invalid_argument("Los substrings deben tener la misma longitud.");
     }
     int distance = 0;
-    for (size_t i = 0; i < s1.size(); ++i) {
+    for (int i = 0; i < s1.size(); ++i) {
         if (s1[i] != s2[i]) {
             ++distance;
         }
@@ -93,7 +93,8 @@ int distancia_aritmetica(int s1, int s2) {
 
 vector<int> compressString(const string& input, const unordered_map<string, int>& substring_to_index) {
     vector<int> compressed;
-    for (size_t i = 0; i < input.size(); i += 3) {
+    int size = input.size();
+    for (int i = 0; i+3 <= size; i += 3) {
         string substring = input.substr(i, 3);
         int position = findSubstringPosition(substring_to_index, substring);
         if (position != -1) {
@@ -118,13 +119,13 @@ vector<int> calculateColumnMeans(const vector<vector<int>>& positions) {
             sum += row[j];
         }
         int mean = sum / positions.size();
-        column_means[j] = (mean % 64 + 32) % 64; 
+        column_means[j] = (mean + 32) % 64; 
     }
 
     return column_means;
 }
 
-tuple<string, int> greedyHeuristicFFMS(const vector<string>& dataset, const unordered_map<string,int>& substring_to_index, 
+string greedyHeuristicFFMS(const vector<string>& dataset, int long_cadenas, const unordered_map<string,int>& substring_to_index, 
 const unordered_map<int, string>& index_to_substring, int threshold){
 
     // matriz de posiciones de los substrings
@@ -136,36 +137,42 @@ const unordered_map<int, string>& index_to_substring, int threshold){
     }
     // Calcular los promedios de las columnas
     vector<int> column_means = calculateColumnMeans(positions);
-    //
+    
     string solution_string;
     for(int pos: column_means){
         solution_string += getSubstringByPosition(index_to_substring, pos);
     }
-    // Evaluar la calidad de la solución
-    int max_distance = 0;
-    string farthest_string;
-    for( const auto& str : dataset){
-        int total_distance = 0;
-        for (size_t i = 0; i + 3<= solution_string.size(); i += 3) {
-            string substring_solution = solution_string.substr(i, 3);
-            string substring_str = str.substr(i, 3);
-            total_distance += hammingDistance(substring_solution, substring_str);
-        }
-        if (total_distance > max_distance){
-            max_distance = total_distance;
-            farthest_string = str;
-        }
-        // Si satisface el umbral, se devuelve la solución
-        if (max_distance >= threshold){
-            cout << "Satisface el umbral con th = " << threshold << endl;
-            return make_tuple(solution_string, max_distance);
-        }
+
+    //caso de que 800%3 = 2
+    if(long_cadenas % 3 != 0) {
+        solution_string += "AA";
     }
 
-    return make_tuple(solution_string, max_distance);
+    return solution_string;
 
 }
 
+//Función para evaluar la calidad de la solución. Entrega la proporción de filas del dataset que cumplen con el threshold
+double calidad_solucion(const vector<string>& dataset, int threshold, string solution_string) {
+    // Evaluar la calidad de la solución
+    int size = solution_string.size();
+    double suma_filas;
+    double calidad = 0;
+    for(const auto& str : dataset){
+        int total_distance = 0;
+        for (int i = 0; i < size; i += 3) {
+            string substring_solution = solution_string.substr(i, 3);
+            string substring_str_dataset = str.substr(i, 3);
+            total_distance += hammingDistance(substring_solution, substring_str_dataset);
+        }
+        if (total_distance >= threshold){
+            suma_filas++;
+        }
+    }
 
+    calidad = suma_filas / dataset.size();
+
+    return calidad;
+}
 
 #endif

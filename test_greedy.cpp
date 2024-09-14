@@ -15,21 +15,20 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     string inputFileName = argv[2];
-    vector<string> input_data = loadInputData(inputFileName);
 
-    int N, M, I;
+    int N, M, I; //N cadenas de longitud M
     tie(N, M, I) = parseFileInfo(inputFileName);
+    vector<string> input_data = loadInputData(inputFileName);
     double threshold = stod(argv[4])*M; //puede ser 0.8 o 0.85 tambien 
     srand(I + 26999); //random seed 
 
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
-    tuple<string, int> solution;
-    solution = greedyHeuristicFFMS(input_data, substring_to_index, index_to_substring, threshold);
+    string solution = greedyHeuristicFFMS(input_data, M, substring_to_index, index_to_substring, threshold);
+    double calidad = calidad_solucion(input_data, threshold, solution);
 
-    cout << "Solucion: " << get<0>(solution) << endl;
-    //print distance
-    cout << "Distancia: " << get<1>(solution) << endl;
+    cout << "Solucion: " << solution << endl;
+    cout << "Calidad: " << calidad << endl;
     return 0;
 }
