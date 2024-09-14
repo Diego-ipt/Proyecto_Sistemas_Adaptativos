@@ -19,16 +19,16 @@ int main(int argc, char* argv[]) {
     int N, M, I; //N cadenas de longitud M
     tie(N, M, I) = parseFileInfo(inputFileName);
     vector<string> input_data = loadInputData(inputFileName);
-    double threshold = stod(argv[4])*M; //puede ser 0.8 o 0.85 tambien 
+    double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
-
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
+    auto start = chrono::high_resolution_clock::now();
     string solution = greedyHeuristicFFMS(input_data, M, substring_to_index, index_to_substring, threshold);
     double calidad = calidad_solucion(input_data, threshold, solution);
-
-    cout << "Solucion: " << solution << endl;
+    auto end = chrono::high_resolution_clock::now();
+    cout << "Tiempo de ejecucion: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << " ms" << endl;
     cout << "Calidad: " << calidad << endl;
     return 0;
 }

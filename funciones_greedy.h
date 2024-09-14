@@ -65,6 +65,7 @@ string getSubstringByPosition(const unordered_map<int, string>& index_to_substri
 //Función para calcular la distancia hamming dados dos substrings
 int hammingDistance(const string& s1, const string& s2) {
     if (s1.size() != s2.size()) {
+        cout << "s1: " << s1 << " s2: " << s2 << endl; // Depuración
         throw invalid_argument("Los substrings deben tener la misma longitud.");
     }
     int distance = 0;
@@ -137,11 +138,12 @@ const unordered_map<int, string>& index_to_substring, int threshold){
     }
     // Calcular los promedios de las columnas
     vector<int> column_means = calculateColumnMeans(positions);
-    
+
     string solution_string;
     for(int pos: column_means){
         solution_string += getSubstringByPosition(index_to_substring, pos);
     }
+
 
     //caso de que 800%3 = 2
     if(long_cadenas % 3 != 0) {
