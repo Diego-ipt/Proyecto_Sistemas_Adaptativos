@@ -32,8 +32,18 @@ for %%f in (%CARPETA%\*.txt) do (
         rem Mostrar qué archivo se está procesando
         echo Ejecutando prueba con archivo: %%f (N=!N!, M=!M!, I=!I!)
         
-        rem Ejecutar tu programa
-        test_greedy.exe -i %%f -th %THRESHOLD%
+        rem Ejecutar el programa y almacenar los outputs en un txt
+        test_greedy -i %%f -th !THRESHOLD! > temp_output.txt
+
+        for /f "tokens=3" %%x in ('findstr "Tiempo de Ejecución" temp_output.txt') do (
+            set tiempo_ejecucion=%%x
+        )
+        for /f "tokens=3" %%x in ('findstr "Calidad" temp_output.txt') do (
+            set calidad_solucion=%%x
+        )
+        
+        rem Guardar los resultados en el archivo CSV
+        echo !N!;!M!;!tiempo_ejecucion!;!calidad_solucion! >> results_greedy.csv
     )
 )
 
