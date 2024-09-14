@@ -46,8 +46,9 @@ for %%f in (%CARPETA%\*.txt) do (
         echo !N!;!M!;!tiempo_ejecucion!;!calidad_solucion! >> results_greedy.csv
     )
 )
-
+rem Eliminar el archivo temporal
+del temp_output.txt
 rem Fin del script
 echo Todas las pruebas han sido ejecutadas y los resultados se han agregado al archivo CSV.
 
-pause
+endlocal
