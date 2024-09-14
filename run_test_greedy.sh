@@ -32,7 +32,7 @@ for N in "${Ns[@]}"; do
             echo "Ejecutando para N=$N, M=$M, instancia=$instance, archivo de entrada=$input_file"
             
             # Ejecutar el programa y capturar los tiempos de ejecución y las calidades
-            result=$(run_program "$input_file" "$threshold" "$alpha")
+            result=$(run_program "$input_file" "$threshold")
             execution_time=$(echo "$result" | awk '{print $1}')
             quality=$(echo "$result" | awk '{print $2}')
             

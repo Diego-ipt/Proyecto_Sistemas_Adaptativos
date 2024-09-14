@@ -113,7 +113,6 @@ vector<int> compressString(const string& input, const unordered_map<string, int>
 vector<int> calculateColumnMeans(const vector<vector<int>>& positions, double alpha = 1.0) {
     int num_columns = positions[0].size();
     vector<int> column_means(num_columns, 0);
-
     for (int j = 0; j < num_columns; ++j) {
         int sum = 0;
         for (const auto& row : positions) {
@@ -122,10 +121,11 @@ vector<int> calculateColumnMeans(const vector<vector<int>>& positions, double al
         int mean = sum / positions.size();
         // Generar numero aleatorio entre 0 y 1
         double random_value = static_cast<double>(rand()) / RAND_MAX;
-        if(random_value < alpha) {
-            column_means[j] = mean;
+        if(random_value < alpha) { //determinista si alpha es 1 
+            column_means[j] = (mean + 32) % 64;
+            
         } else {
-            column_means[j] = (mean + 32) % 64; 
+            column_means[j] = mean;
         }
     }
 
