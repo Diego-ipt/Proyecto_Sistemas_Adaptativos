@@ -9,7 +9,7 @@ Ms=(300 600 800)
 
 # Definir el valor del umbral
 threshold=0.75
-alpha=0.85
+alpha=0.5 #para elegir promedio simple o ponderado, puede ser entre 0 y 1
 # Inicializar arrays para almacenar los tiempos de ejecución y las calidades
 declare -A execution_times
 declare -A qualities
@@ -19,7 +19,7 @@ run_program() {
     local input_file=$1
     local threshold=$2
     local alpha=$3
-    local output=$(./test_greedy -i "$input_file" -th "$threshold")
+    local output=$(./test_greedy -i "$input_file" -th "$threshold" -alpha "$alpha" )
     local execution_time=$(echo "$output" | sed -n '1p')
     local quality=$(echo "$output" | sed -n '2p')
     echo "$execution_time" "$quality"
