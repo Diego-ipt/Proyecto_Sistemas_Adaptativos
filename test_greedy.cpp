@@ -47,8 +47,8 @@ int main(int argc, char* argv[]) {
     auto end = chrono::high_resolution_clock::now();
     double tiempo_ejecucion = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
-    cout<< tiempo_ejecucion << endl; // tiempo de ejecucion en ms
-    cout << calidad << endl;
+    cout << "Tiempo de ejecución: " << tiempo_ejecucion << endl; // tiempo de ejecucion en ms
+    cout << "Calidad: " << calidad << endl;
 
     /*
     ofstream outputFile("results_greedy.csv", ios::app);
