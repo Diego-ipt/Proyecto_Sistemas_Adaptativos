@@ -12,3 +12,9 @@ para ejecutar:
 
 El parámetro alpha es opcional. Si le otorgamos un valor a alpha, entonces nuestro greedy será aleatorizado, sino, alpha tomará valor 1 y será determinista.
 
+Para ejecutar los archivos .sh:
+./nombre_archivo.sh
+
+Para otorgar permisos para ejecutar .sh:.
+chmod +x nombre_archivo.sh
+
