@@ -109,29 +109,6 @@ vector<int> compressString(const string& input, const unordered_map<string, int>
 }
 
 
-//Función para calcular la media de las columnas
-vector<int> calculateColumnMeans(const vector<vector<int>>& positions, double alpha = 1.0) {
-    int num_columns = positions[0].size();
-    vector<int> column_means(num_columns, 0);
-    for (int j = 0; j < num_columns; ++j) {
-        int sum = 0;
-        for (const auto& row : positions) {
-            sum += row[j];
-        }
-        int mean = sum / positions.size();
-        // Generar numero aleatorio entre 0 y 1
-        double random_value = static_cast<double>(rand()) / RAND_MAX;
-        if(random_value < alpha) { //determinista si alpha es 1 
-            column_means[j] = (mean + 32) % 64;
-            
-        } else {
-            column_means[j] = mean;
-        }
-    }
-
-    return column_means;
-}
-
 string greedyHeuristicFFMS(const vector<string>& dataset, int long_cadenas, const unordered_map<string,int>& substring_to_index, 
 const unordered_map<int, string>& index_to_substring, int threshold, double alpha = 1.0) {
 
@@ -142,23 +119,42 @@ const unordered_map<int, string>& index_to_substring, int threshold, double alph
     for(const auto& str: dataset){
         positions.push_back(compressString(str, substring_to_index));
     }
-    // Calcular los promedios de las columnas, aqui se aplica la aleatoriedad con alpha
-    vector<int> column_means = calculateColumnMeans(positions, alpha);
+
+    //Función para calcular la media de las columnas
+    int num_columns = positions[0].size();
+    vector<int> column_means(num_columns, 0);
+    for (int j = 0; j < num_columns; ++j) {
+        // Generar numero aleatorio entre 0 y 1
+        double random_value = static_cast<double>(rand()) / RAND_MAX;
+        if(random_value < alpha) { // determinista si alpha es 1 
+            int sum = 0;
+            for (const auto& row : positions) {
+                sum += row[j];
+            }
+            int mean = sum / positions.size();
+            column_means[j] = (mean + 32) % 64;
+        } else {
+            column_means[j] = rand() % 64;
+        }
+}
 
     string solution_string;
     for(int pos: column_means){
         solution_string += getSubstringByPosition(index_to_substring, pos);
     }
 
-
     //caso de que 800%3 = 2
-    if(long_cadenas % 3 != 0) {
+    if(long_cadenas % 3 == 1) {
+        solution_string += "A";
+    } else if(long_cadenas % 3 == 2) {
         solution_string += "AA";
+    } else {
+        printf("Error en la longitud de las cadenas\n");
     }
 
     return solution_string;
-
 }
+
 
 //Función para evaluar la calidad de la solución. Entrega la proporción de filas del dataset que cumplen con el threshold
 double calidad_solucion(const vector<string>& dataset, int threshold, string solution_string) {
