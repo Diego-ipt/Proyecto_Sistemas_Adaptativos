@@ -162,6 +162,7 @@ double calidad_solucion(const vector<string>& dataset, int threshold, string sol
     int size = solution_string.size();
     double suma_filas;
     double calidad = 0;
+    int cantidad_reject = 0;
     for(const auto& str : dataset){
         int total_distance = 0;
         for (int i = 0; i < size; i += 3) {
@@ -170,14 +171,17 @@ double calidad_solucion(const vector<string>& dataset, int threshold, string sol
             total_distance += hammingDistance(substring_solution, substring_str_dataset);
         }
         if (total_distance >= threshold){
-            suma_filas++;
+            suma_filas++;//parte real de la calidad
         } else {
+            cantidad_reject++;
             suma_filas_reject += total_distance;
         }
     }
 
+    double porcentaje_hamilton_reject = suma_filas_reject/(dataset.size()*cantidad_reject);//parte suavizada de la calidad. debe ser porcentaje_hamilton_reject<1
+
     //calidad = suma_filas / dataset.size();
-    calidad = suma_filas+suma_filas_reject/dataset.size();
+    calidad = suma_filas+porcentaje_hamilton_reject;
 
     return calidad;//para conseguir el treshhold normal se debe usar un (int(calidad))/ dataset.size()
                    //ya que esta modificada para dar una pendiente suave para poder ser usada en la metaheuristica
