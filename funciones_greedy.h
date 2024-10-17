@@ -143,13 +143,12 @@ const unordered_map<int, string>& index_to_substring, int threshold, double alph
         solution_string += getSubstringByPosition(index_to_substring, pos);
     }
 
-    //caso de que 800%3 = 2
-    if(long_cadenas % 3 == 1) {
+    // Handle the remaining characters if the length is not a multiple of 3
+    int remainder = long_cadenas % 3;
+    if (remainder == 1) {
         solution_string += "A";
-    } else if(long_cadenas % 3 == 2) {
+    } else if (remainder == 2) {
         solution_string += "AA";
-    } else {
-        printf("Error en la longitud de las cadenas\n");
     }
 
     return solution_string;
@@ -158,6 +157,7 @@ const unordered_map<int, string>& index_to_substring, int threshold, double alph
 
 //Función para evaluar la calidad de la solución. Entrega la proporción de filas del dataset que cumplen con el threshold
 double calidad_solucion(const vector<string>& dataset, int threshold, string solution_string) {
+    double suma_filas_reject=0;
     // Evaluar la calidad de la solución
     int size = solution_string.size();
     double suma_filas;
@@ -171,12 +171,15 @@ double calidad_solucion(const vector<string>& dataset, int threshold, string sol
         }
         if (total_distance >= threshold){
             suma_filas++;
+        } else {
+            suma_filas_reject += total_distance;
         }
     }
 
-    calidad = suma_filas / dataset.size();
+    //calidad = suma_filas / dataset.size();
+    calidad = suma_filas+suma_filas_reject/dataset.size();
 
-    return calidad;
+    return calidad;//para conseguir el treshhold normal se debe usar un (int(calidad))/ dataset.size()
+                   //ya que esta modificada para dar una pendiente suave para poder ser usada en la metaheuristica
 }
-
 #endif
