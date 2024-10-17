@@ -64,6 +64,7 @@
     "ostream": "cpp",
     "iosfwd": "cpp",
     "cstdlib": "cpp",
-    "vector": "cpp"
+    "vector": "cpp",
+    "unordered_map": "cpp"
   }
 }

@@ -1,6 +1,6 @@
 #include "loadinputdata.h"
 #include "funciones_greedy.h"
-
+#include <cmath>
 #include <chrono>
 #include <unordered_map>
 #include <iostream>
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 
     auto start = chrono::high_resolution_clock::now();
     string solution = greedyHeuristicFFMS(input_data, M, substring_to_index, index_to_substring, threshold, alpha);
-    double calidad = static_cast<int>(calidad_solucion(input_data, threshold, solution))/input_data.size();
+    double calidad = trunc(calidad_solucion(input_data, threshold, solution))/input_data.size();
     auto end = chrono::high_resolution_clock::now();
     double tiempo_ejecucion = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
