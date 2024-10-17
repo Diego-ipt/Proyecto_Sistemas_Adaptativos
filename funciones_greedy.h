@@ -136,7 +136,7 @@ const unordered_map<int, string>& index_to_substring, int threshold, double alph
         } else {
             column_means[j] = rand() % 64;
         }
-}
+    }
 
     string solution_string;
     for(int pos: column_means){
