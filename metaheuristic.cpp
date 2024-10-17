@@ -55,7 +55,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     string current_solution = generateInitialSolution(dataset, threshold, substring_to_index, index_to_substring);
     string best_solution = current_solution;
     double best_quality = calidad_solucion(dataset, threshold, best_solution);
-
+    int dataset_size= dataset.size();
     // Simulated Annealing parameters
     double temperature = 1000.0;
     double cooling_rate = 0.99;
@@ -64,7 +64,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     // Simulated Annealing loop
     while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
         // Calculate the size of the parts to replace
-        int part_size = static_cast<int>(temperature / dataset.size()) * 3; // Ensure part_size is a multiple of 3
+        int part_size = static_cast<int>(temperature / dataset_size) * 3; // Ensure part_size is a multiple of 3
         int random_position = rand() % (current_solution.size() - part_size + 1);
         // Replace the parts with new random substrings
         // Extract the substring
@@ -82,7 +82,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
             if (neighbor_quality > best_quality) {
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
-                cout << "Best quality: " << best_quality << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
+                cout << "Best quality: " << best_quality<< ", quality estandar(treshold aceptada): " << static_cast<int>(best_quality)/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
                 current_solution = new_solution;
             }
         }  
@@ -93,7 +93,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         double elapsed_time = (clock() - start_time) / CLOCKS_PER_SEC;
         cooling_rate = 0.99 + (0.01 * (elapsed_time / max_time_seconds));
     }
-
+    printf("Best solution: %s\n", best_solution.c_str());
 
     // while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
     //     vector<string> neighbor_solutions = generateNeighborSolution(current_solution, substring_to_index, index_to_substring);
@@ -144,6 +144,6 @@ int main(int argc, char* argv[]) {
     srand(I + 26999); //random seed 
     int max_time_seconds = 60; // 60 segundos como tiempo máximo
     cooling_system("cooling_system", input_data, max_time_seconds, threshold); // max_time_seconds segundos como tiempo máximo
-
+    printf("Fin del programa\n");
     return 0;
 }
