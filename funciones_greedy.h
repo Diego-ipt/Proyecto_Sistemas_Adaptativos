@@ -159,10 +159,11 @@ const unordered_map<int, string>& index_to_substring, int threshold, double alph
 double calidad_solucion(const vector<string>& dataset, int threshold, string solution_string) {
     double suma_filas_reject=0;
     // Evaluar la calidad de la solución
-    int size = solution_string.size();
+    double size = solution_string.size();
     double suma_filas;
     double calidad = 0;
-    int cantidad_reject = 0;
+    double cantidad_reject = 0;
+    double data_size = dataset.size();
     for(const auto& str : dataset){
         int total_distance = 0;
         for (int i = 0; i < size; i += 3) {
@@ -174,12 +175,12 @@ double calidad_solucion(const vector<string>& dataset, int threshold, string sol
             suma_filas++;//parte real de la calidad
         } else {
             cantidad_reject++;
-            suma_filas_reject += total_distance;
+            suma_filas_reject += total_distance/size;
         }
     }
 
-    double porcentaje_hamilton_reject = suma_filas_reject/(dataset.size()*cantidad_reject);//parte suavizada de la calidad. debe ser porcentaje_hamilton_reject<1
-
+    double porcentaje_hamilton_reject = suma_filas_reject/cantidad_reject;//parte suavizada de la calidad. debe ser porcentaje_hamilton_reject<1
+    //printf("porcentaje_hamilton_reject: %f\n", porcentaje_hamilton_reject);
     //calidad = suma_filas / dataset.size();
     calidad = suma_filas+porcentaje_hamilton_reject;
 
