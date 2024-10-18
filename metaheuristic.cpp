@@ -60,26 +60,10 @@ vector<string> generateNeighborSolution(const string& current_solution,unordered
 //generar neighbor random
 string generateNeighborSolutionRandom(int size, unordered_map<int, string> index_to_substring){
     string neighbor_solutions;
-    for (int j = 0; j < size; j++) {
+    for (int j = 0; j < size; j+=3) {
         neighbor_solutions+=getSubstringByPosition(index_to_substring, rand() % 64);
     }
     return neighbor_solutions;
-}
-
-vector<int> calidad_solucion_neighbor(const string& current_solution, int random_position, 
-    const vector<string>& dataset, int threshold, 
-    const vector<string>& neighbor_solutions) {
-    vector<int> qualities;
-    int part_size = neighbor_solutions[0].size();
-    int size = current_solution.size();
-    string new_solution;
-    for (const string& neighbor_solution : neighbor_solutions) {
-        new_solution = current_solution;
-        new_solution.replace(random_position, part_size, neighbor_solution);
-        int quality = calidad_solucion(dataset, threshold, new_solution);
-        qualities.push_back(quality);
-    }
-    return qualities;
 }
 
 void local_search(string& current_solution, int random_position, int part_size, const vector<string>& dataset, double threshold, double temperature, string& best_solution, double& best_quality, const unordered_map<string, int>& substring_to_index, const unordered_map<int, string>& index_to_substring, clock_t start_time, int dataset_size) {
@@ -114,7 +98,7 @@ bool accept_rate(double best_quality, double neighbor_quality, double temperatur
 
     //cout << "Probabilidad: " << probability << endl;
 
-    double aleatorio= static_cast<double>(rand()) / RAND_MAX;
+    double aleatorio= (static_cast<double>(rand()) / RAND_MAX);
     //cout << "Aleatorio: " << aleatorio << endl;
     
     if (aleatorio < probability) {
@@ -122,6 +106,16 @@ bool accept_rate(double best_quality, double neighbor_quality, double temperatur
     }
     // Si no se acepta la nueva solución, mantener la calidad actual
     return accept;  
+}
+
+int size_calculator(double temperature_porcentual, double solution_size){
+    int size_extra = solution_size/3;
+    int tercio_semi_aleatorio = temperature_porcentual*size_extra*(static_cast<double>(rand()) / RAND_MAX);
+    int multiplo_tres = tercio_semi_aleatorio*3;
+    if (multiplo_tres == 0){
+        return 3;
+    }
+    return (multiplo_tres);
 }
 
 void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
@@ -136,7 +130,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     int solution_size = best_solution.size();
     // Simulated Annealing parameters
     double temperature = 1000.0;
-    int max_temperature = 1000;
+    double max_temperature = 1000;
     double cooling_rate = 0.99;
     clock_t start_time = clock();
 
@@ -148,20 +142,22 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     string new_solution;
     double elapsed_time;
     // Calculate the size of the parts to replace
-    part_size = trunc((temperature/max_temperature)*solution_size) * 3;
+    part_size = size_calculator(temperature/max_temperature, solution_size);
     random_position = rand() % (solution_size - part_size + 1);
+    printf("Part size: %d, random position: %d\n", part_size, random_position);
     // Call local_search function
     local_search(current_solution, random_position, part_size, dataset, threshold, 
     temperature, best_solution, best_quality, substring_to_index, 
     index_to_substring, start_time, dataset_size);
-
+    cout << "Best quality: " << best_quality << ", quality estandar(treshold aceptada): " << (trunc(best_quality)) / dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
+            
     while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
         // Calculate the size of the parts to replace
-        part_size = trunc((temperature/max_temperature)*solution_size) * 3;
+        part_size = size_calculator(temperature/max_temperature, solution_size);
         random_position = rand() % (solution_size - part_size + 1);
-
+        printf("Part size: %d, random position: %d\n", part_size, random_position);
         // Generate neighbor solutions for the substring
-        solution_random = generateNeighborSolutionRandom(part_size%3, index_to_substring);
+        solution_random = generateNeighborSolutionRandom(part_size, index_to_substring);
 
         new_solution = current_solution;
         new_solution.replace(random_position, part_size, solution_random);
