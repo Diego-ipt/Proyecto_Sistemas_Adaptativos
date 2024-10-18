@@ -144,8 +144,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
             new_solution = current_solution;
             new_solution.replace(random_position, part_size, neighbor_solution);
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
-            double normalized_diff = (neighbor_quality_promedio - neighbor_quality) / best_quality;
-            if (((double) rand() / RAND_MAX) < exp(normalized_diff / temperature)) {
+            if (((double) rand() / RAND_MAX) < exp((neighbor_quality_promedio - neighbor_quality) / temperature)) {
                 // best_solution = new_solution;
                 // best_quality = neighbor_quality;
                 //cout << "Leap quality: " << neighbor_quality<< ", quality estandar(treshold aceptada): " << (trunc(neighbor_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
