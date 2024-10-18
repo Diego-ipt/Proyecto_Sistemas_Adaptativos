@@ -9,7 +9,7 @@ Ms=(300 600 800)
 
 # Definir el valor del umbral
 threshold=0.75
-alpha=0.5 #para elegir promedio simple o ponderado, puede ser entre 0 y 1
+alpha=0 #para elegir promedio simple o ponderado, puede ser entre 0 y 1
 # Inicializar arrays para almacenar los tiempos de ejecución y las calidades
 declare -A execution_times
 declare -A qualities
