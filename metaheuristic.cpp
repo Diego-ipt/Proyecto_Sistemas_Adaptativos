@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <numeric>
 #include <ctime>
 #include <cstdlib>
 #include <cmath>
@@ -70,6 +71,14 @@ vector<string> generateNeighborSolutionRandom(int size, unordered_map<int, strin
     return neighbor_solutions;
 }
 
+vector<int> calidad_solucion_neighbor(const vector<string>& dataset, int threshold, const vector<string>& neighbor_solutions) {
+    vector<int> qualities;
+    for (const string& neighbor_solution : neighbor_solutions) {
+        int quality = calidad_solucion(dataset, threshold, neighbor_solution);
+        qualities.push_back(quality);
+    }
+    return qualities;
+}
 void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
@@ -127,7 +136,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         // Generate neighbor solutions for the substring
         neighbor_solutions_random = generateNeighborSolutionRandom(sub_solution.size(), index_to_substring);
         vector<int> neighbor_quality_random = calidad_solucion_neighbor(dataset, threshold, neighbor_solutions_random);
-        double neighbor_quality_promedio = /*calcular el promedio de neighbor_quality_random*/;
+        double neighbor_quality_promedio = accumulate(neighbor_quality_random.begin(), neighbor_quality_random.end(), 0.0) / neighbor_quality_random.size();
         for (const string& neighbor_solution : neighbor_solutions_random) {
             // Replace the original substring with the neighbor solution
             new_solution = current_solution;
@@ -135,7 +144,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
 
 
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
-            if (((double) rand() / RAND_MAX) < exp((neighbor_quality_random - neighbor_quality) / temperature)) {
+            if (((double) rand() / RAND_MAX) < exp((neighbor_quality_promedio - neighbor_quality) / temperature)) {
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
                 cout << "Leap quality: " << best_quality<< ", quality estandar(treshold aceptada): " << (trunc(best_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
