@@ -31,7 +31,7 @@ vector<string> generateNeighborSolution(const string& current_solution,unordered
     int num_columns = solution.size();
 
     // Generar soluciones vecinas
-    for (int j = 1; j < 8; ++j) {
+    for (int j = 0; j < 8; ++j) {
         vector<int> new_solution = solution;
         for (int i = 0; i < num_columns; ++i) {
             new_solution[i] = (solution[j % num_columns] + static_cast<int>(j * 8));
@@ -58,14 +58,10 @@ vector<string> generateNeighborSolution(const string& current_solution,unordered
 }
 
 //generar neighbor random
-vector<string> generateNeighborSolutionRandom(int size, unordered_map<int, string> index_to_substring){
-    vector<string> neighbor_solutions;
-    for (int i = 0; i < 10; ++i) {
-        string new_solution_sub_str;
-        for (int j = 0; j < size; j+=3) {
-            new_solution_sub_str+=getSubstringByPosition(index_to_substring, rand() % 64);
-        }
-        neighbor_solutions.push_back(new_solution_sub_str);
+string generateNeighborSolutionRandom(int size, unordered_map<int, string> index_to_substring){
+    string neighbor_solutions;
+    for (int j = 0; j < size; j++) {
+        neighbor_solutions+=getSubstringByPosition(index_to_substring, rand() % 64);
     }
     return neighbor_solutions;
 }
@@ -115,8 +111,7 @@ bool accept_rate(double best_quality, double neighbor_quality, double temperatur
 
     // Si la nueva solución es peor, aceptarla con una probabilidad P
     double probability = exp(-delta_quality / temperature);
-    probability--;
-    probability*=10000;
+
     //cout << "Probabilidad: " << probability << endl;
 
     double aleatorio= static_cast<double>(rand()) / RAND_MAX;
@@ -138,23 +133,23 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     string best_solution = current_solution;
     double best_quality = calidad_solucion(dataset, threshold, best_solution);
     int dataset_size= dataset.size();
-    int best_solution_size = best_solution.size();
+    int solution_size = best_solution.size();
     // Simulated Annealing parameters
     double temperature = 1000.0;
+    int max_temperature = 1000;
     double cooling_rate = 0.99;
     clock_t start_time = clock();
 
     // Simulated Annealing loop
     int part_size;
     int random_position;
-    string sub_solution;
     vector<string> neighbor_solutions;
-    vector<string> neighbor_solutions_random;
+    string solution_random;
     string new_solution;
     double elapsed_time;
     // Calculate the size of the parts to replace
-    part_size = trunc(temperature/1000) /(dataset_size) * 3;
-    random_position = rand() % (best_solution_size - part_size + 1);
+    part_size = trunc((temperature/max_temperature)*solution_size) * 3;
+    random_position = rand() % (solution_size - part_size + 1);
     // Call local_search function
     local_search(current_solution, random_position, part_size, dataset, threshold, 
     temperature, best_solution, best_quality, substring_to_index, 
@@ -162,37 +157,24 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
 
     while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
         // Calculate the size of the parts to replace
-        part_size = trunc((temperature/1000) * (dataset_size)) * 3; // Ensure part_size is a multiple of 3
-        random_position = rand() % (best_solution_size - part_size + 1);
-        local_search(current_solution, random_position, part_size, dataset, threshold, 
-    temperature, best_solution, best_quality, substring_to_index, 
-    index_to_substring, start_time, dataset_size);
-        random_position = rand() % (best_solution_size - part_size + 1);
-
-        // Replace the parts with new random substrings
-        // Extract the substring
-        sub_solution = current_solution.substr(random_position, part_size);
+        part_size = trunc((temperature/max_temperature)*solution_size) * 3;
+        random_position = rand() % (solution_size - part_size + 1);
 
         // Generate neighbor solutions for the substring
-        neighbor_solutions_random = generateNeighborSolutionRandom(sub_solution.size(), index_to_substring);
-        for (const string& neighbor_solution : neighbor_solutions_random) {
-            // Replace the original substring with the neighbor solution
-            new_solution = current_solution;
-            new_solution.replace(random_position, part_size, neighbor_solution);
-            double neighbor_solution_quality_in = calidad_solucion(dataset, threshold, new_solution);
+        solution_random = generateNeighborSolutionRandom(part_size%3, index_to_substring);
 
-            if (accept_rate(best_quality, neighbor_solution_quality_in, temperature, dataset_size)) {
-                // best_solution = new_solution;
-                // best_quality = neighbor_quality;
-                cout<<".";//ayuda visual de probabilidad
-                // cout << "Leap quality: " << neighbor_quality<< ", quality estandar(treshold aceptada): " << (trunc(neighbor_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
-                current_solution = new_solution;
-                local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
-                //temperature /= cooling_rate;
-            }else{
-                cout<<"-";//ayuda visual de probabilidad
-            }
+        new_solution = current_solution;
+        new_solution.replace(random_position, part_size, solution_random);
+        double neighbor_solution_quality_in = calidad_solucion(dataset, threshold, new_solution);
+
+        if (accept_rate(best_quality, neighbor_solution_quality_in, temperature, dataset_size)) {
+            cout<<".";//ayuda visual de probabilidad
+            current_solution = new_solution;
+            local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
+        }else{
+            cout<<"-";//ayuda visual de probabilidad
         }
+
 
         // Reduce the temperature
         temperature *= cooling_rate;
