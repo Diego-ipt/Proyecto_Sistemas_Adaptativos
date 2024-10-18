@@ -1,3 +1,6 @@
+#ifndef FUNCIONES_METAHEURISTIC_H
+#define FUNCIONES_METAHEURISTIC_H
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -66,7 +69,7 @@ string generateNeighborSolutionRandom(int size, unordered_map<int, string> index
     return neighbor_solutions;
 }
 
-void local_search(string& current_solution, int random_position, int part_size, const vector<string>& dataset, double threshold, double temperature, string& best_solution, double& best_quality, const unordered_map<string, int>& substring_to_index, const unordered_map<int, string>& index_to_substring, clock_t start_time, int dataset_size) {
+void local_search(string& current_solution, int random_position, int part_size, const vector<string>& dataset, double threshold, double temperature, string& best_solution, double& best_quality, const unordered_map<string, int>& substring_to_index, const unordered_map<int, string>& index_to_substring, clock_t start_time, int dataset_size, int& best_time) {
     // Extract the substring
     string sub_solution = current_solution.substr(random_position, part_size);
 
@@ -81,7 +84,7 @@ void local_search(string& current_solution, int random_position, int part_size, 
         if (neighbor_quality > best_quality) {
             best_solution = new_solution;
             best_quality = neighbor_quality;
-            cout << "Best quality: " << best_quality << ", quality estandar(treshold aceptada): " << (trunc(best_quality)) / dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
+            best_time = (clock() - start_time) / CLOCKS_PER_SEC;
             current_solution = new_solution;
         }
     }
@@ -122,7 +125,7 @@ int size_calculator(double temperature_porcentual, double solution_size){
     return (multiplo_tres);
 }
 
-void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
+pair<double, int> cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
@@ -145,6 +148,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     string solution_random;
     string new_solution;
     double elapsed_time;
+    int tiempo_mejor_sol = 0;
     // Calculate the size of the parts to replace
     part_size = size_calculator(temperature/max_temperature, solution_size);
     random_position = rand() % (solution_size - part_size + 1);
@@ -152,8 +156,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     // Call local_search function
     local_search(current_solution, random_position, part_size, dataset, threshold, 
     temperature, best_solution, best_quality, substring_to_index, 
-    index_to_substring, start_time, dataset_size);
-    cout << "Best quality: " << best_quality << ", quality estandar(treshold aceptada): " << (trunc(best_quality)) / dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
+    index_to_substring, start_time, dataset_size, tiempo_mejor_sol);
             
     while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
         // Calculate the size of the parts to replace
@@ -167,16 +170,12 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         new_solution.replace(random_position, part_size, solution_random);
         double neighbor_solution_quality_in = calidad_solucion(dataset, threshold, new_solution);
         current_solution = new_solution;
-        local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
         
         if (accept_rate(best_quality, neighbor_solution_quality_in, temperature/max_temperature, dataset_size)) {
             //cout<<".";//ayuda visual de probabilidad
             current_solution = new_solution;
-            local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
-        }else{
-            //cout<<"-";//ayuda visual de probabilidad
+            local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size, tiempo_mejor_sol);
         }
-
 
         // Reduce the temperature
         temperature *= cooling_rate;
@@ -186,23 +185,9 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         cooling_rate = 0.99 + (0.01 * (elapsed_time / max_time_seconds));
         //printf("%f\n", temperature);
     }
-    cout << " \nBest solution: " << best_solution << "\nBest quality: " << best_quality << endl;
+
+    return make_pair((trunc(best_quality)) / dataset_size, tiempo_mejor_sol);
+    
 }
 
-int main(int argc, char* argv[]) {
-    if (argc < 4 || string(argv[1]) != "-i" || string(argv[3]) != "-th") {
-        cerr << "Usar: " << argv[0] << " -i <instancia-problema> -th threshold" << endl;
-        return 1;
-    }
-    string inputFileName = argv[2];
-
-    int N, M, I; //N cadenas de longitud M
-    tie(N, M, I) = parseFileInfo(inputFileName);
-    vector<string> input_data = loadInputData(inputFileName);
-    double threshold = stod(argv[4])*M; // porcentaje de longitud M
-    srand(I + 26999); //random seed 
-    int max_time_seconds = 60; // 60 segundos como tiempo máximo
-    cooling_system("cooling_system", input_data, max_time_seconds, threshold); // max_time_seconds segundos como tiempo máximo
-    cout<<"time: "<<max_time_seconds<<("\nFin del programa\n");
-    return 0;
-}
+#endif
