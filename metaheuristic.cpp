@@ -87,23 +87,27 @@ void local_search(string& current_solution, int random_position, int part_size, 
     }
 }
 
-bool accept_rate(double best_quality, double neighbor_quality, double temperature, int dataset_size) {
+double calcularProbabilidad(double temperatura_porcentual, double delta_calidad_porcentual) {
+    return exp(-delta_calidad_porcentual / temperatura_porcentual);
+}
+
+bool accept_rate(double best_quality, double neighbor_quality, double temperature_porcentual, int dataset_size) {
 
     // Calcular la diferencia de calidad
-    double delta_quality = (neighbor_quality - best_quality)/dataset_size;
-    bool accept = false;
-
-    // Si la nueva solución es peor, aceptarla con una probabilidad P
-    double probability = exp(-delta_quality*temperature);
-
-    //cout << "Probabilidad: " << probability << endl;
-
+    double delta_quality = (best_quality-neighbor_quality)/dataset_size;
+    double probability = exp(delta_quality);
+    probability *=temperature_porcentual;
     double aleatorio= (static_cast<double>(rand()) / RAND_MAX);
-    //cout << "Aleatorio: " << aleatorio << endl;
-    
-    if (aleatorio < probability) {
+    bool accept = false;
+    // Calcular la probabilidad de aceptar la nueva solución
+    //cout<< "delta_quality: "<<delta_quality<<", probability: "<<probability<<", aleatorio: "<<aleatorio<<endl;
+
+    if( delta_quality<=0){
+        accept=true;
+    }else if (aleatorio < probability) {
         accept= true;
     }
+
     // Si no se acepta la nueva solución, mantener la calidad actual
     return accept;  
 }
@@ -166,11 +170,11 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
         
         if (accept_rate(best_quality, neighbor_solution_quality_in, temperature/max_temperature, dataset_size)) {
-            cout<<".";//ayuda visual de probabilidad
+            //cout<<".";//ayuda visual de probabilidad
             current_solution = new_solution;
             local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
         }else{
-            cout<<"-";//ayuda visual de probabilidad
+            //cout<<"-";//ayuda visual de probabilidad
         }
 
 
@@ -197,7 +201,7 @@ int main(int argc, char* argv[]) {
     vector<string> input_data = loadInputData(inputFileName);
     double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
-    int max_time_seconds = 20; // 60 segundos como tiempo máximo
+    int max_time_seconds = 60; // 60 segundos como tiempo máximo
     cooling_system("cooling_system", input_data, max_time_seconds, threshold); // max_time_seconds segundos como tiempo máximo
     cout<<"time: "<<max_time_seconds<<("\nFin del programa\n");
     return 0;
