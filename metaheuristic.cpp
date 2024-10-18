@@ -108,7 +108,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     double elapsed_time;
     while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
         // Calculate the size of the parts to replace
-        part_size = trunc(temperature / dataset_size) * 3; // Ensure part_size is a multiple of 3
+        part_size = trunc((temperature/1000) * (dataset_size*0.04)) * 3; // Ensure part_size is a multiple of 3
         random_position = rand() % (best_solution_size - part_size + 1);
         // Replace the parts with new random substrings
         // Extract the substring
@@ -145,9 +145,9 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
             new_solution.replace(random_position, part_size, neighbor_solution);
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
             if (((double) rand() / RAND_MAX) < exp((neighbor_quality_promedio - neighbor_quality) / temperature)) {
-                best_solution = new_solution;
-                best_quality = neighbor_quality;
-                cout << "Leap quality: " << best_quality<< ", quality estandar(treshold aceptada): " << (trunc(best_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
+                // best_solution = new_solution;
+                // best_quality = neighbor_quality;
+                //cout << "Leap quality: " << neighbor_quality<< ", quality estandar(treshold aceptada): " << (trunc(neighbor_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
                 current_solution = new_solution;
             }
         }
