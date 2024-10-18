@@ -126,14 +126,16 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
 
         // Generate neighbor solutions for the substring
         neighbor_solutions_random = generateNeighborSolutionRandom(sub_solution.size(), index_to_substring);
-
+        vector<int> neighbor_quality_random = calidad_solucion_neighbor(dataset, threshold, neighbor_solutions_random);
+        double neighbor_quality_promedio = /*calcular el promedio de neighbor_quality_random*/;
         for (const string& neighbor_solution : neighbor_solutions_random) {
             // Replace the original substring with the neighbor solution
             new_solution = current_solution;
             new_solution.replace(random_position, part_size, neighbor_solution);
 
+
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
-            if (((double) rand() / RAND_MAX) < exp((neighbor_quality - best_quality) / temperature)) {
+            if (((double) rand() / RAND_MAX) < exp((neighbor_quality_random - neighbor_quality) / temperature)) {
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
                 cout << "Leap quality: " << best_quality<< ", quality estandar(treshold aceptada): " << (trunc(best_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
