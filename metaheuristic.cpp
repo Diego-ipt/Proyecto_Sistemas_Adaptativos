@@ -28,11 +28,22 @@ vector<string> generateNeighborSolution(const string& current_solution,unordered
     vector<string> neighbor_solutions;
     vector<int> solution = compressString(current_solution, substring_to_index);
     int num_columns = solution.size();
+
     // Generar soluciones vecinas
     for (int j = 1; j < 8; ++j) {
         vector<int> new_solution = solution;
         for (int i = 0; i < num_columns; ++i) {
-            new_solution[i] = (solution[j % num_columns] + static_cast<int>(j * 8 * temperature)) % 64;
+            new_solution[i] = (solution[j % num_columns] + static_cast<int>(j * 8));
+            
+            //perturbacion
+            int random_position = (rand() % 64)*temperature;
+            if (rand() % 2) {
+                new_solution[i] += random_position;
+            }else{
+                new_solution[i] -= random_position;
+                new_solution[i] = abs(new_solution[i]);
+            }
+            new_solution[i] %= 64;
         }
         // Convert new_solution to string before pushing
         string new_solution_str;
@@ -91,7 +102,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
                 best_quality = neighbor_quality;
                 cout << "Best quality: " << best_quality<< ", quality estandar(treshold aceptada): " << (trunc(best_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
                 current_solution = new_solution;
-            }
+            } 
         }  
 
         temperature *= cooling_rate;
@@ -99,42 +110,9 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         // Incrementar el cooling rate proporcionalmente al tiempo transcurrido
         elapsed_time = (clock() - start_time) / CLOCKS_PER_SEC;
         cooling_rate = 0.99 + (0.01 * (elapsed_time / max_time_seconds));
+        //printf("%f\n", temperature);
     }
     printf("Best solution: %s\n", best_solution.c_str());
-
-    // while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
-    //     vector<string> neighbor_solutions = generateNeighborSolution(current_solution, substring_to_index, index_to_substring);
-    //     for (const string& neighbor_solution : neighbor_solutions) {
-    //         double neighbor_quality = calidad_solucion(dataset, threshold, neighbor_solution);
-    //         if (neighbor_quality > best_quality) {
-    //             best_solution = neighbor_solution;
-    //             best_quality = neighbor_quality;
-    //             cout << "Best quality: " << best_quality << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
-    //         }
-
-    //         double acceptance_probability = exp((neighbor_quality - best_quality) / temperature);
-    //         if (neighbor_quality > best_quality || ((double) rand() / RAND_MAX) < acceptance_probability) {
-    //             current_solution = neighbor_solution;
-    //         }
-    //     }
-    //     // Calculate the size of the parts to replace
-    //     int part_size = static_cast<int>(temperature / dataset.size()) * 3; // Ensure part_size is a multiple of 3
-    //     if (part_size > 0 && part_size <= current_solution.size()) {
-    //         // Select a random position in the solution
-    //         int random_position = rand() % (current_solution.size() - part_size + 1);
-    //             // Replace the parts with new random substrings
-    //         for (int i = 0; i < part_size; i += 3) {
-    //             string new_substring = generateRandomSubstring(3); // Function to generate a random substring of length 3
-    //             current_solution.replace(random_position + i, 3, new_substring);
-    //         }
-    //     }
-
-    //     temperature *= cooling_rate;
-
-    //     // Incrementar el cooling rate proporcionalmente al tiempo transcurrido
-    //     double elapsed_time = (clock() - start_time) / CLOCKS_PER_SEC;
-    //     cooling_rate = 0.99 + (0.01 * (elapsed_time / max_time_seconds));
-    // }
 }
 
 int main(int argc, char* argv[]) {
