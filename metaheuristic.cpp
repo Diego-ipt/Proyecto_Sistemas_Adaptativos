@@ -56,7 +56,19 @@ vector<string> generateNeighborSolution(const string& current_solution,unordered
     return neighbor_solutions;
 }
 
-
+//generar neighbor random
+vector<string> generateNeighborSolutionRandom(int size, unordered_map<int, string> index_to_substring){
+    vector<string> neighbor_solutions;
+    vector<string> new_solution;
+    for (int i = 0; i < 10; ++i) {
+        string new_solution_str;
+        for (int j = 0; j < size; ++j) {
+            new_solution_str+=getSubstringByPosition(index_to_substring, rand() % 64);
+        }
+        neighbor_solutions.push_back(new_solution_str);
+    }
+    return neighbor_solutions;
+}
 
 void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
     unordered_map<string, int> substring_to_index;
@@ -78,6 +90,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     int random_position;
     string sub_solution;
     vector<string> neighbor_solutions;
+    vector<string> neighbor_solutions_random;
     string new_solution;
     double elapsed_time;
     while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
@@ -103,8 +116,35 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
                 cout << "Best quality: " << best_quality<< ", quality estandar(treshold aceptada): " << (trunc(best_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
                 current_solution = new_solution;
             } 
-        }  
+        }
 
+
+        random_position = rand() % (best_solution_size - part_size + 1);
+        // Replace the parts with new random substrings
+        // Extract the substring
+        sub_solution = current_solution.substr(random_position, part_size);
+
+        // Generate neighbor solutions for the substring
+        neighbor_solutions_random = generateNeighborSolutionRandom(sub_solution.size(), index_to_substring);
+
+        for (const string& neighbor_solution : neighbor_solutions_random) {
+            // Replace the original substring with the neighbor solution
+            new_solution = current_solution;
+            new_solution.replace(random_position, part_size, neighbor_solution);
+
+            double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
+            if (((double) rand() / RAND_MAX) < exp((neighbor_quality - best_quality) / temperature)) {
+                best_solution = new_solution;
+                best_quality = neighbor_quality;
+                cout << "Leap quality: " << best_quality<< ", quality estandar(treshold aceptada): " << (trunc(best_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
+                current_solution = new_solution;
+                current_solution = neighbor_solution;
+            }
+        }
+
+
+
+        // Reduce the temperature
         temperature *= cooling_rate;
 
         // Incrementar el cooling rate proporcionalmente al tiempo transcurrido
@@ -127,7 +167,7 @@ int main(int argc, char* argv[]) {
     vector<string> input_data = loadInputData(inputFileName);
     double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
-    int max_time_seconds = 10; // 60 segundos como tiempo máximo
+    int max_time_seconds = 60; // 60 segundos como tiempo máximo
     cooling_system("cooling_system", input_data, max_time_seconds, threshold); // max_time_seconds segundos como tiempo máximo
     printf("Fin del programa\n");
     return 0;
