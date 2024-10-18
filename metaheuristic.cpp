@@ -58,26 +58,31 @@ vector<string> generateNeighborSolution(const string& current_solution,unordered
 }
 
 //generar neighbor random
-vector<string> generateNeighborSolutionRandom(const string& current_solution, int size, unordered_map<int, string> index_to_substring){
+vector<string> generateNeighborSolutionRandom(int size, unordered_map<int, string> index_to_substring){
     vector<string> neighbor_solutions;
-    
     for (int i = 0; i < 10; ++i) {
-        string new_solution = current_solution;
         string new_solution_sub_str;
-        int random_position = rand() % (current_solution.size() - size + 1);
         for (int j = 0; j < size; j+=3) {
             new_solution_sub_str+=getSubstringByPosition(index_to_substring, rand() % 64);
         }
-        new_solution.replace(random_position, size, new_solution_sub_str);
-        neighbor_solutions.push_back(new_solution);
+        neighbor_solutions.push_back(new_solution_sub_str);
+    }
+    //print neighbor solutions
+    for (const string& neighbor_solution : neighbor_solutions) {
+        cout << neighbor_solution << endl;
     }
     return neighbor_solutions;
 }
 
-vector<int> calidad_solucion_neighbor(const vector<string>& dataset, int threshold, const vector<string>& neighbor_solutions) {
+vector<int> calidad_solucion_neighbor(const string& current_solution, int random_position, const vector<string>& dataset, int threshold, const vector<string>& neighbor_solutions) {
     vector<int> qualities;
+    int part_size = neighbor_solutions[0].size();
+    int size = current_solution.size();
+    string new_solution;
     for (const string& neighbor_solution : neighbor_solutions) {
-        int quality = calidad_solucion(dataset, threshold, neighbor_solution);
+        new_solution = current_solution;
+        new_solution.replace(random_position, part_size, neighbor_solution);
+        int quality = calidad_solucion(dataset, threshold, new_solution);
         qualities.push_back(quality);
     }
     return qualities;
@@ -129,22 +134,20 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
                 current_solution = new_solution;
             } 
         }
-
+        cout<<current_solution.size()<<endl;
         random_position = rand() % (best_solution_size - part_size + 1);
         // Replace the parts with new random substrings
         // Extract the substring
         sub_solution = current_solution.substr(random_position, part_size);
 
         // Generate neighbor solutions for the substring
-        neighbor_solutions_random = generateNeighborSolutionRandom(current_solution, sub_solution.size(), index_to_substring);
-        vector<int> neighbor_quality_random = calidad_solucion_neighbor(dataset, threshold, neighbor_solutions_random);
+        neighbor_solutions_random = generateNeighborSolutionRandom(sub_solution.size(), index_to_substring);
+        vector<int> neighbor_quality_random = calidad_solucion_neighbor(current_solution, random_position, dataset, threshold, neighbor_solutions_random);
         double neighbor_quality_promedio = accumulate(neighbor_quality_random.begin(), neighbor_quality_random.end(), 0.0) / neighbor_quality_random.size();
         for (const string& neighbor_solution : neighbor_solutions_random) {
             // Replace the original substring with the neighbor solution
             new_solution = current_solution;
             new_solution.replace(random_position, part_size, neighbor_solution);
-
-
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
             if (((double) rand() / RAND_MAX) < exp((neighbor_quality_promedio - neighbor_quality) / temperature)) {
                 best_solution = new_solution;
