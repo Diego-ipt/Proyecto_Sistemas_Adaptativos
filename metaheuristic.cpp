@@ -67,10 +67,6 @@ vector<string> generateNeighborSolutionRandom(int size, unordered_map<int, strin
         }
         neighbor_solutions.push_back(new_solution_sub_str);
     }
-    //print neighbor solutions
-    for (const string& neighbor_solution : neighbor_solutions) {
-        cout << neighbor_solution << endl;
-    }
     return neighbor_solutions;
 }
 
@@ -134,7 +130,6 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
                 current_solution = new_solution;
             } 
         }
-        cout<<current_solution.size()<<endl;
         random_position = rand() % (best_solution_size - part_size + 1);
         // Replace the parts with new random substrings
         // Extract the substring
@@ -154,7 +149,6 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
                 best_quality = neighbor_quality;
                 cout << "Leap quality: " << best_quality<< ", quality estandar(treshold aceptada): " << (trunc(best_quality))/dataset_size << " found at time: " << (clock() - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
                 current_solution = new_solution;
-                current_solution = neighbor_solution;
             }
         }
 
