@@ -58,15 +58,18 @@ vector<string> generateNeighborSolution(const string& current_solution,unordered
 }
 
 //generar neighbor random
-vector<string> generateNeighborSolutionRandom(int size, unordered_map<int, string> index_to_substring){
+vector<string> generateNeighborSolutionRandom(const string& current_solution, int size, unordered_map<int, string> index_to_substring){
     vector<string> neighbor_solutions;
-    vector<string> new_solution;
+    
     for (int i = 0; i < 10; ++i) {
-        string new_solution_str;
-        for (int j = 0; j < size; ++j) {
-            new_solution_str+=getSubstringByPosition(index_to_substring, rand() % 64);
+        string new_solution = current_solution;
+        string new_solution_sub_str;
+        int random_position = rand() % (current_solution.size() - size + 1);
+        for (int j = 0; j < size; j+=3) {
+            new_solution_sub_str+=getSubstringByPosition(index_to_substring, rand() % 64);
         }
-        neighbor_solutions.push_back(new_solution_str);
+        new_solution.replace(random_position, size, new_solution_sub_str);
+        neighbor_solutions.push_back(new_solution);
     }
     return neighbor_solutions;
 }
@@ -127,14 +130,13 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
             } 
         }
 
-
         random_position = rand() % (best_solution_size - part_size + 1);
         // Replace the parts with new random substrings
         // Extract the substring
         sub_solution = current_solution.substr(random_position, part_size);
 
         // Generate neighbor solutions for the substring
-        neighbor_solutions_random = generateNeighborSolutionRandom(sub_solution.size(), index_to_substring);
+        neighbor_solutions_random = generateNeighborSolutionRandom(current_solution, sub_solution.size(), index_to_substring);
         vector<int> neighbor_quality_random = calidad_solucion_neighbor(dataset, threshold, neighbor_solutions_random);
         double neighbor_quality_promedio = accumulate(neighbor_quality_random.begin(), neighbor_quality_random.end(), 0.0) / neighbor_quality_random.size();
         for (const string& neighbor_solution : neighbor_solutions_random) {
