@@ -94,7 +94,7 @@ bool accept_rate(double best_quality, double neighbor_quality, double temperatur
     bool accept = false;
 
     // Si la nueva solución es peor, aceptarla con una probabilidad P
-    double probability = exp(-delta_quality / temperature);
+    double probability = exp(-delta_quality*temperature);
 
     //cout << "Probabilidad: " << probability << endl;
 
@@ -144,7 +144,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     // Calculate the size of the parts to replace
     part_size = size_calculator(temperature/max_temperature, solution_size);
     random_position = rand() % (solution_size - part_size + 1);
-    printf("Part size: %d, random position: %d\n", part_size, random_position);
+    //printf("Part size: %d, random position: %d\n", part_size, random_position);
     // Call local_search function
     local_search(current_solution, random_position, part_size, dataset, threshold, 
     temperature, best_solution, best_quality, substring_to_index, 
@@ -155,15 +155,17 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         // Calculate the size of the parts to replace
         part_size = size_calculator(temperature/max_temperature, solution_size);
         random_position = rand() % (solution_size - part_size + 1);
-        printf("Part size: %d, random position: %d\n", part_size, random_position);
+        //printf("Part size: %d, random position: %d\n", part_size, random_position);
         // Generate neighbor solutions for the substring
         solution_random = generateNeighborSolutionRandom(part_size, index_to_substring);
 
         new_solution = current_solution;
         new_solution.replace(random_position, part_size, solution_random);
         double neighbor_solution_quality_in = calidad_solucion(dataset, threshold, new_solution);
-
-        if (accept_rate(best_quality, neighbor_solution_quality_in, temperature, dataset_size)) {
+        current_solution = new_solution;
+        local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
+        
+        if (accept_rate(best_quality, neighbor_solution_quality_in, temperature/max_temperature, dataset_size)) {
             cout<<".";//ayuda visual de probabilidad
             current_solution = new_solution;
             local_search(current_solution, random_position, part_size, dataset, threshold, temperature, best_solution, best_quality, substring_to_index, index_to_substring, start_time, dataset_size);
