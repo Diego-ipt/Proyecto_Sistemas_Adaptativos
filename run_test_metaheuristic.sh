@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile the program
-g++ -o metaheuristic metaheuristic.cpp
+g++ -o metaheuristic test_metaheuristic.cpp
 if [ $? -ne 0 ]; then
     echo "Compilation failed. Exiting."
     exit 1
