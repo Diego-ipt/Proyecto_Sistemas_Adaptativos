@@ -2,6 +2,10 @@
 
 # Compile the program
 g++ -o metaheuristic metaheuristic.cpp
+if [ $? -ne 0 ]; then
+    echo "Compilation failed. Exiting."
+    exit 1
+fi
 
 # Define the sets of values for N and M
 Ns=(100 200)
@@ -33,7 +37,7 @@ for threshold in "${thresholds[@]}"; do
     # Iterate over each pair of N and M values
     for N in "${Ns[@]}"; do
         for M in "${Ms[@]}"; do
-            for instance in $(seq -w 001 010); do
+            for instance in $(seq -w 001 100); do
                 input_file="./FFMS_all_instances/${N}-${M}-${instance}.txt"
                 echo "Ejecutando para N=$N, M=$M, instancia=$instance, threshold=$threshold, archivo de entrada=$input_file"
                 
@@ -76,11 +80,11 @@ for threshold in "${thresholds[@]}"; do
         echo "$std_dev"
     }
 
-    # CSV FILE
+    # Create the CSV file and add headers
     output_file="results_metaheuristic_${threshold}.csv"
     echo "N;M;Calidad Promedio;Desviación Estándar de Calidad;Tiempo Promedio para Mejor Solución (ms);Desviación Estándar de Tiempo para Mejor Solución (ms)" > "$output_file"
 
-    # Calcular y mostrar la media de la calidad y el tiempo para la mejor solución para cada par de conjuntos
+    # Calculate and display the average quality and time to best solution for each pair of sets
     for N in "${Ns[@]}"; do
         for M in "${Ms[@]}"; do
             key="$N-$M"
