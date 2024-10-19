@@ -1,2 +1,1 @@
-N;M;tiempo_ejecucion(ms);calidad_solucion 
-100;300;; 
+N;M;Calidad Promedio;Desviación Estándar de Calidad;Tiempo Promedio para Mejor Solución (ms) 
