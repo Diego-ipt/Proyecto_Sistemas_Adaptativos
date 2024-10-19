@@ -26,7 +26,6 @@ string generateInitialSolution(const vector<string>& dataset, double threshold,u
     return solution;
 }
 
-
 //Función para generar soluciones vecinas
 vector<string> generateNeighborSolution(const string& current_solution,unordered_map<string, int> substring_to_index, unordered_map<int, string> index_to_substring, double temperature){
     vector<string> neighbor_solutions;
@@ -88,10 +87,6 @@ void local_search(string& current_solution, int random_position, int part_size, 
             current_solution = new_solution;
         }
     }
-}
-
-double calcularProbabilidad(double temperatura_porcentual, double delta_calidad_porcentual) {
-    return exp(-delta_calidad_porcentual / temperatura_porcentual);
 }
 
 bool accept_rate(double best_quality, double neighbor_quality, double temperature_porcentual, int dataset_size) {
