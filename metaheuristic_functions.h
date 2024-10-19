@@ -154,8 +154,8 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         }  
 
         temperature *= cooling_rate;
-        // Si no hay mejoras durante 20 iteraciones, ajustar el cooling_rate
-        if (iterations_without_improvement >= 30) {
+        // Si no hay mejoras en iteraciones, ajustar el cooling_rate
+        if (iterations_without_improvement >= 100 && temperature/1000 < 0.3 && false) {
             cooling_rate *= 1.01; // Aumentar ligeramente el cooling_rate
             iterations_without_improvement = 0; // Reiniciar el contador
             while (true) {
