@@ -36,12 +36,8 @@ int main(int argc, char* argv[]) {
 
     // Semilla aleatoria
     srand(I + 26999);
-
     // Llamada a la función de enfriamiento simulado
-    auto p = cooling_system(metaheuristic_name, input_data, max_time_seconds, threshold);
-
-    cout << p.first << endl; //calidad
-    cout << p.second << endl; //tiempo en que la encontró
+    cooling_system(metaheuristic_name, input_data, max_time_seconds, threshold);
 
     return 0;
 }

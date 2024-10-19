@@ -85,6 +85,8 @@ void local_search(string& current_solution, int random_position, int part_size, 
             best_quality = neighbor_quality;
             best_time = (clock() - start_time) / CLOCKS_PER_SEC;
             current_solution = new_solution;
+            cout << (trunc(best_quality)) / dataset_size << endl;
+            cout << best_time << endl;
         }
     }
 }
@@ -120,7 +122,7 @@ int size_calculator(double temperature_porcentual, double solution_size){
     return (multiplo_tres);
 }
 
-pair<double, int> cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
+void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
@@ -181,8 +183,9 @@ pair<double, int> cooling_system(const string& metaheuristic_name, const vector<
         //printf("%f\n", temperature);
     }
 
-    return make_pair((trunc(best_quality)) / dataset_size, tiempo_mejor_sol);
-    
+    cout << best_solution << endl;
+    cout << (trunc(best_quality)) / dataset_size << endl;
+    cout << tiempo_mejor_sol << endl;
 }
 
 #endif

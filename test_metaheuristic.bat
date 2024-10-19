@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 REM Compilar el programa 
-g++ -o metaheuristic metaheuristic.cpp 
+g++ -o test_metaheuristic test_metaheuristic.cpp 
 
 rem Directorio donde está el archivo de prueba específico
 set "ARCHIVO=FFMS_all_instances\100-300-001.txt"
