@@ -37,7 +37,7 @@ for threshold in "${thresholds[@]}"; do
     # Iterate over each pair of N and M values
     for N in "${Ns[@]}"; do
         for M in "${Ms[@]}"; do
-            for instance in $(seq -w 001 100); do
+            for instance in $(seq -w 001 010); do
                 input_file="./FFMS_all_instances/${N}-${M}-${instance}.txt"
                 echo "Ejecutando para N=$N, M=$M, instancia=$instance, threshold=$threshold, archivo de entrada=$input_file"
                 
