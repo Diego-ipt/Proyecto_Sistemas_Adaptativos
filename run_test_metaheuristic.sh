@@ -22,7 +22,7 @@ declare -A times_to_best
 run_program() {
     local input_file=$1
     local threshold=$2
-    local output=$(./metaheuristic -i "$input_file" -t 30 -th "$threshold")
+    local output=$(./metaheuristic prueba -i "$input_file" -t 30 -th "$threshold")
     local quality=$(echo "$output" | sed -n '1p')
     local time_to_best=$(echo "$output" | sed -n '2p')
     echo "$quality" "$time_to_best"
@@ -59,6 +59,10 @@ for threshold in "${thresholds[@]}"; do
         local numbers=($1)
         local sum=0
         local count=${#numbers[@]}
+        if [ $count -eq 0 ]; then
+            echo 0
+            return
+        fi
         for num in "${numbers[@]}"; do
             sum=$(awk "BEGIN {print $sum + $num}")
         done
@@ -72,6 +76,10 @@ for threshold in "${thresholds[@]}"; do
         local mean=$(calculate_average "$1")
         local sum_sq_diff=0
         local count=${#numbers[@]}
+        if [ $count -eq 0 ]; then
+            echo 0
+            return
+        fi
         for num in "${numbers[@]}"; do
             sum_sq_diff=$(awk "BEGIN {print $sum_sq_diff + ($num - $mean)^2}")
         done
@@ -82,7 +90,7 @@ for threshold in "${thresholds[@]}"; do
 
     # Create the CSV file and add headers
     output_file="results_metaheuristic_${threshold}.csv"
-    echo "N;M;Calidad Promedio;Desviación Estándar de Calidad;Tiempo Promedio para Mejor Solución (ms);Desviación Estándar de Tiempo para Mejor Solución (ms)" > "$output_file"
+    echo "N;M;Calidad Promedio;Desviación Estándar de Calidad;Tiempo Promedio para Mejor Solución (ms)" > "$output_file"
 
     # Calculate and display the average quality and time to best solution for each pair of sets
     for N in "${Ns[@]}"; do
@@ -94,12 +102,11 @@ for threshold in "${thresholds[@]}"; do
             avg_quality=$(calculate_average "${quals[*]}")
             std_dev_quality=$(calculate_std_dev "${quals[*]}")
             avg_time_to_best=$(calculate_average "${times_best[*]}")
-            std_dev_time_to_best=$(calculate_std_dev "${times_best[*]}")
             
-            echo "N=$N, M=$M: Calidad Promedio = $avg_quality, Desviación Estándar de Calidad = $std_dev_quality, Tiempo Promedio para Mejor Solución = $avg_time_to_best ms, Desviación Estándar de Tiempo para Mejor Solución = $std_dev_time_to_best ms"
+            echo "N=$N, M=$M: Calidad Promedio = $avg_quality, Desviación Estándar de Calidad = $std_dev_quality, Tiempo Promedio para Mejor Solución = $avg_time_to_best ms"
             
             # Save the results to the CSV file
-            echo "$N;$M;$avg_quality;$std_dev_quality;$avg_time_to_best;$std_dev_time_to_best" >> "$output_file"
+            echo "$N;$M;$avg_quality;$std_dev_quality;$avg_time_to_best" >> "$output_file"
         done
     done
 done
