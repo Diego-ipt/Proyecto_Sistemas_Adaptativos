@@ -100,7 +100,7 @@ string generateNeighborSolutionRandom(int size, unordered_map<int, string> index
     return neighbor_solutions;
 }
 
-void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds, int threshold) {
+void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds=10, int threshold) {
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
@@ -114,6 +114,8 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     double temperature = 1000.0;
     double cooling_rate = 0.99;
     clock_t start_time = clock();
+    int time;
+
 
     // Simulated Annealing loop
     int part_size;
@@ -145,7 +147,8 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
             if (neighbor_quality > best_quality) {
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
-                cout << (trunc(best_quality))/dataset_size << " "<< (clock() - start_time) / CLOCKS_PER_SEC << endl;
+                time=(clock() - start_time) / CLOCKS_PER_SEC;
+                cout << (trunc(best_quality)) << " "<< time << endl;
                 current_solution = new_solution;
                 iterations_without_improvement=0;
             }else {
@@ -186,7 +189,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         //printf("%f\n", temperature);
     }
 
-    cout << (trunc(best_quality))/dataset_size << " "<< (clock() - start_time) / CLOCKS_PER_SEC;                
+    cout << (trunc(best_quality)) << " "<< time;                
     printf("\n%s", best_solution.c_str());
 }
 
