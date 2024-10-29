@@ -48,10 +48,10 @@ int main(int argc, char* argv[]) {
     auto end = chrono::high_resolution_clock::now();
     double tiempo_ejecucion = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
-    cout<< tiempo_ejecucion << endl; // tiempo de ejecucion en ms
-    cout << calidad << endl;
+    // cout<< tiempo_ejecucion << endl; // tiempo de ejecucion en ms
+    // cout << calidad << endl;
 
-    /*
+    
     ofstream outputFile("results_greedy.csv", ios::app);
     if (!outputFile.is_open()) {
         cerr << "Error abriendo el archivo: results_greedy.csv" << endl;
@@ -59,6 +59,5 @@ int main(int argc, char* argv[]) {
     }
     outputFile << N << ";" << M << ";" << tiempo_ejecucion << ";" << calidad << endl;
     outputFile.close();
-    */
     return 0;
 }
