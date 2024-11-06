@@ -1,3 +1,0 @@
-Error en la longitud de las cadenas
-16
-0.66
