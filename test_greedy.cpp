@@ -26,7 +26,9 @@ int main(int argc, char* argv[]) {
     srand(I + 26999); //random seed 
     double alpha= 1.0;
 
-    // Leer parametro opcional -alpha
+
+    // Verificar si se usa el modo tuning y alfa
+    int tuningMode = false;
     for (int i = 5; i < argc; ++i) {
         if (string(argv[i]) == "-alpha" && i + 1 < argc) {
             alpha = stod(argv[i + 1]);
@@ -34,6 +36,9 @@ int main(int argc, char* argv[]) {
                 cerr << "El valor de alpha debe estar entre 0 y 1." << endl;
                 return 1;
             }
+            i++;
+        } else if (string(argv[i]) == "-tuning" && i + 1 < argc && string(argv[i + 1]) == "1") {
+            tuningMode = true;
             i++;
         }
     }
@@ -44,12 +49,18 @@ int main(int argc, char* argv[]) {
 
     auto start = chrono::high_resolution_clock::now();
     string solution = greedyHeuristicFFMS(input_data, M, substring_to_index, index_to_substring, threshold, alpha);
-    double calidad = trunc(calidad_solucion(input_data, threshold, solution))/input_data.size();
+    double calidad_sin_norm = trunc(calidad_solucion(input_data, threshold, solution));
+    double calidad = calidad_sin_norm  /input_data.size();
+    double calidad_tuning = calidad_sin_norm * -1.0; // Se invierte la calidad para el modo tuning
     auto end = chrono::high_resolution_clock::now();
     double tiempo_ejecucion = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
-    cout<< tiempo_ejecucion << endl; // tiempo de ejecucion en ms
-    cout << calidad << endl;
+    if (tuningMode) {
+        cout << calidad_tuning << " " << tiempo_ejecucion << endl;
+    } else {
+        cout << "Calidad: " << calidad << endl;
+        cout << "Tiempo de ejecución: " << tiempo_ejecucion << " ms" << endl;
+    }
 
     /*
     ofstream outputFile("results_greedy.csv", ios::app);
