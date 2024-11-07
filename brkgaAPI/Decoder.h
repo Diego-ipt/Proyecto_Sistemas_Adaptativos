@@ -83,11 +83,11 @@ public:
 				solucion += 'C';
 			}
 		}
+		std::cout << "solucion: " << solucion << std::endl;
 
 		myFitness= calidad_solucion(dataset, treshold, solucion);
-		myFitness = trunc(myFitness);
-
-		std::cout << myFitness << std::endl;
+		
+		myFitness = myFitness*-1;
 
 		// Return the fitness:
 		return myFitness;

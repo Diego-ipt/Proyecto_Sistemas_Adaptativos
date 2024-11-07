@@ -67,11 +67,11 @@ int main(int argc, char* argv[]) {
 		std::cout << "Population #" << i << ":" << std::endl;
 		for(unsigned j = 0; j < bound; ++j) {
 			std::cout << "\t" << j << ") "
-					<< algorithm.getPopulation(i).getFitness(j) << std::endl;
+					<< trunc(-1*algorithm.getPopulation(i).getFitness(j)) << std::endl;
 		}
 	}
 	
-	std::cout << "Best solution found has objective value = " << algorithm.getBestFitness() << std::endl;
+	std::cout << "Best solution found has objective value = " << trunc(-1*algorithm.getBestFitness()) << std::endl;
 	
 	
 	return 0;
