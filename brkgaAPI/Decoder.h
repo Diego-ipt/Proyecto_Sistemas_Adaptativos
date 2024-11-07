@@ -53,17 +53,11 @@
 
 #ifndef DECODER_H
 #define DECODER_H
-#include "loadinputdata.h"
-#include "funciones_greedy.h"
-#include <list>
+#include "../funciones_greedy.h"
 #include <vector>
 #include <algorithm>
 #include <string>
-
-std::string traduccion(const std::vector< double >& chromosome){
-	
-
-}
+#include <numeric>
 
 class Decoder {
 public:
@@ -71,31 +65,29 @@ public:
 	~Decoder(){};	// Destructor
 
 	// Decode a chromosome, returning its fitness as a double-precision floating point:
-	double decode(const std::vector< double >& chromosome, double treshold, const vector<string>& dataset) const{
+	double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<string>& dataset) const{
 		double myFitness = 0.0;
-		std::string new_solution = traduccion(chromosome);
 
+		std::string solucion = "";
+		int size = chromosome.size();
 
-
-
-		myFitness= calidad_solucion(dataset, treshold, new_solution);
-		typedef std::pair< double, unsigned > ValueKeyPair;
-		std::vector< ValueKeyPair > rank(chromosome.size());
-
-		for(unsigned i = 0; i < chromosome.size(); ++i) {
-			rank[i] = ValueKeyPair(chromosome[i], i);
-			myFitness += (double(i + 1) * chromosome[i]);
+		//traduccion a caracteres
+		for(unsigned i = 0; i < size; i++) {
+			if(chromosome[i] < 0.25) {
+				solucion += 'A';
+			} else if(chromosome[i] >= 0.25 && chromosome[i] < 0.5) {
+				solucion += 'G';
+			} else if(chromosome[i] >= 0.5 && chromosome[i] < 0.75) {
+				solucion += 'T';
+			} else if(chromosome[i] >= 0.75 && chromosome[i] < 1) {
+				solucion += 'C';
+			}
 		}
 
-		// Here we sort 'permutation', which will then produce a permutation of [n]
-		// stored in ValueKeyPair::second:
-		std::sort(rank.begin(), rank.end());
+		myFitness= calidad_solucion(dataset, treshold, solucion);
+		myFitness = trunc(myFitness);
 
-		// permutation[i].second is in {0, ..., n - 1}; a permutation can be obtained as follows
-		std::list< unsigned > permutation;
-		for(std::vector< ValueKeyPair >::const_iterator i = rank.begin(); i != rank.end(); ++i) {
-			permutation.push_back(i->second);
-		}
+		std::cout << myFitness << std::endl;
 
 		// Return the fitness:
 		return myFitness;

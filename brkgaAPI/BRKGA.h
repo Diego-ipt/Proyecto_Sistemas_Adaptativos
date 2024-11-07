@@ -99,8 +99,7 @@ public:
 	 *                WARNING: Decoder::decode() MUST be thread-safe; safe if implemented as
 	 *                + double Decoder::decode(std::vector< double >& chromosome) const
 	 */
-	BRKGA(unsigned n, unsigned p, double pe, double pm, double rhoe, const Decoder& refDecoder,
-			MTRand& refMTRand, unsigned K = 1, unsigned MAX_THREADS = 1, double treshold, const vector<string>& dataset);
+	BRKGA(unsigned n, unsigned p, double pe, double pm, double rhoe, const Decoder& refDecoder, MTRand& refMTRand, const double threshold, const vector<string>& dataset, unsigned K = 1, unsigned MAX_THREADS = 1);
 
 	/**
 	 * Destructor
@@ -168,6 +167,9 @@ private:
 	const unsigned K;				// number of independent parallel populations
 	const unsigned MAX_THREADS;		// number of threads for parallel decoding
 
+	const double threshold;
+	const std::vector<string>& dataset;
+
 	// Data:
 	std::vector< Population* > previous;	// previous populations
 	std::vector< Population* > current;		// current populations
@@ -179,10 +181,7 @@ private:
 };
 
 template< class Decoder, class MTRand >
-BRKGA< Decoder, MTRand >::BRKGA(unsigned _n, unsigned _p, double _pe, double _pm, double _rhoe,
-                                const Decoder& decoder, MTRand& mtrand, unsigned _K, unsigned MAX, double treshold, const vector<string>& dataset) :
-    n(_n), p(_p), pe(unsigned(_pe * p)), pm(unsigned(_pm * p)), rhoe(_rhoe), refMTRand(mtrand),
-    refDecoder(decoder), K(_K), MAX_THREADS(MAX), previous(K, 0), current(K, 0) {
+BRKGA< Decoder, MTRand >::BRKGA(unsigned _n, unsigned _p, double _pe, double _pm, double _rhoe, const Decoder& decoder, MTRand& mtrand, const double _threshold, const std::vector<string>& _dataset, unsigned _K, unsigned MAX) : n(_n), p(_p), pe(unsigned(_pe * p)), pm(unsigned(_pm * p)), rhoe(_rhoe), refMTRand(mtrand), refDecoder(decoder), K(_K), MAX_THREADS(MAX), previous(K, 0), current(K, 0), threshold(_threshold), dataset(_dataset) {
     if(n == 0) { throw std::range_error("Chromosome size equals zero."); }
     if(p == 0) { throw std::range_error("Population size equals zero."); }
     if(pe == 0) { throw std::range_error("Elite-set size equals zero."); }
@@ -290,7 +289,7 @@ inline void BRKGA< Decoder, MTRand >::initialize(const unsigned i) {
 		#pragma omp parallel for num_threads(MAX_THREADS)
 	#endif
 	for(int j = 0; j < int(p); ++j) {
-		current[i]->setFitness(j, refDecoder.decode((*current[i])(j)) );
+		current[i]->setFitness(j, refDecoder.decode((*current[i])(j), threshold, dataset) );
 	}
 
 	// Sort:
@@ -341,7 +340,7 @@ inline void BRKGA< Decoder, MTRand >::evolution(Population& curr, Population& ne
 		#pragma omp parallel for num_threads(MAX_THREADS)
 	#endif
 	for(int i = int(pe); i < int(p); ++i) {
-		next.setFitness( i, refDecoder.decode(next.population[i]) );
+		next.setFitness( i, refDecoder.decode(next.population[i], threshold, dataset) );
 	}
 
 	// Now we must sort 'current' by fitness, since things might have changed:
