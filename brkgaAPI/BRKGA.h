@@ -100,7 +100,7 @@ public:
 	 *                + double Decoder::decode(std::vector< double >& chromosome) const
 	 */
 	BRKGA(unsigned n, unsigned p, double pe, double pm, double rhoe, const Decoder& refDecoder,
-			MTRand& refMTRand, unsigned K = 1, unsigned MAX_THREADS = 1);
+			MTRand& refMTRand, unsigned K = 1, unsigned MAX_THREADS = 1, double treshold, const vector<string>& dataset);
 
 	/**
 	 * Destructor
@@ -180,7 +180,7 @@ private:
 
 template< class Decoder, class MTRand >
 BRKGA< Decoder, MTRand >::BRKGA(unsigned _n, unsigned _p, double _pe, double _pm, double _rhoe,
-                                const Decoder& decoder, MTRand& mtrand, unsigned _K, unsigned MAX) :
+                                const Decoder& decoder, MTRand& mtrand, unsigned _K, unsigned MAX, double treshold, const vector<string>& dataset) :
     n(_n), p(_p), pe(unsigned(_pe * p)), pm(unsigned(_pm * p)), rhoe(_rhoe), refMTRand(mtrand),
     refDecoder(decoder), K(_K), MAX_THREADS(MAX), previous(K, 0), current(K, 0) {
     if(n == 0) { throw std::range_error("Chromosome size equals zero."); }

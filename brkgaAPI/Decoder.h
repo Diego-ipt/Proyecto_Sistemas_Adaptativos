@@ -53,10 +53,17 @@
 
 #ifndef DECODER_H
 #define DECODER_H
-
+#include "loadinputdata.h"
+#include "funciones_greedy.h"
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <string>
+
+std::string traduccion(const std::vector< double >& chromosome){
+	
+
+}
 
 class Decoder {
 public:
@@ -64,8 +71,14 @@ public:
 	~Decoder(){};	// Destructor
 
 	// Decode a chromosome, returning its fitness as a double-precision floating point:
-	double decode(const std::vector< double >& chromosome) const{
+	double decode(const std::vector< double >& chromosome, double treshold, const vector<string>& dataset) const{
 		double myFitness = 0.0;
+		std::string new_solution = traduccion(chromosome);
+
+
+
+
+		myFitness= calidad_solucion(dataset, treshold, new_solution);
 		typedef std::pair< double, unsigned > ValueKeyPair;
 		std::vector< ValueKeyPair > rank(chromosome.size());
 
