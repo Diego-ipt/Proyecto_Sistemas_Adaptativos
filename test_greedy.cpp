@@ -14,7 +14,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
     
     if (argc < 4 || string(argv[1]) != "-i" || string(argv[3]) != "-th") {
-        cerr << "Usar: " << argv[0] << " -i <instancia-problema> -th threshold" << endl;
+        cerr << "Usar: " << argv[0] << " -i <instancia-problema> -th threshold [-t maxsecs] [-alpha alpha]" << endl;
         return 1;
     }
     string inputFileName = argv[2];
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
     double alpha= 1.0;
-
+    int maxsecs = -1;
 
     // Verificar si se usa el modo tuning y alfa
     int tuningMode = false;
@@ -36,10 +36,15 @@ int main(int argc, char* argv[]) {
                 cerr << "El valor de alpha debe estar entre 0 y 1." << endl;
                 return 1;
             }
-            i++;
-        } else if (string(argv[i]) == "-tuning" && i + 1 < argc && string(argv[i + 1]) == "1") {
-            tuningMode = true;
-            i++;
+            i++; // Skip the next argument because it's part of -alpha
+        }
+        else if (string(argv[i]) == "-tuning" && i + 1 < argc && string(argv[i + 1]) == "1") {
+            tuningMode = true;  // Set tuning mode to true
+            i++; // Skip the next argument because it's part of -tuning
+        }
+        else if (string(argv[i]) == "-t" && i + 1 < argc) {
+            maxsecs = stoi(argv[i + 1]);
+            i++; // Skip the next argument because it's part of -t
         }
     }
 
@@ -56,7 +61,7 @@ int main(int argc, char* argv[]) {
     double tiempo_ejecucion = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
     if (tuningMode) {
-        cout << calidad_tuning << " " << tiempo_ejecucion << endl;
+        cout << calidad_tuning;
     } else {
         cout << "Calidad: " << calidad << endl;
         cout << "Tiempo de ejecución: " << tiempo_ejecucion << " ms" << endl;
