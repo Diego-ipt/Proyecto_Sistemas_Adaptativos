@@ -178,7 +178,9 @@ double calidad_solucion(const vector<string>& dataset, int threshold, string sol
             suma_filas_reject += total_distance/size;
         }
     }
-
+    if(cantidad_reject==0){
+        cantidad_reject=1;
+    }
     double porcentaje_hamilton_reject = suma_filas_reject/cantidad_reject;//parte suavizada de la calidad. debe ser porcentaje_hamilton_reject<1
     //printf("porcentaje_hamilton_reject: %f\n", porcentaje_hamilton_reject);
     //calidad = suma_filas / dataset.size();

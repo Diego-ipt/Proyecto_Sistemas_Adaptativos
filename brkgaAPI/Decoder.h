@@ -50,49 +50,53 @@
  * SOFTWARE.
  *
  */
-
 #ifndef DECODER_H
 #define DECODER_H
+#include <mutex>
 #include "../funciones_greedy.h"
 #include <vector>
 #include <algorithm>
 #include <string>
 #include <numeric>
+#include <iostream>
 
 class Decoder {
 public:
-	Decoder(){};	// Constructor
-	~Decoder(){};	// Destructor
+    Decoder(){};	// Constructor
+    ~Decoder(){};	// Destructor
 
-	// Decode a chromosome, returning its fitness as a double-precision floating point:
-	double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<string>& dataset) const{
-		double myFitness = 0.0;
+    // Decode a chromosome, returning its fitness as a double-precision floating point:
+    double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<std::string>& dataset) const{
+        double myFitness = 0.0;
 
-		std::string solucion = "";
-		int size = chromosome.size();
+        std::string solucion = "";
+        int size = chromosome.size();
 
-		//traduccion a caracteres
-		for(unsigned i = 0; i < size; i++) {
-			if(chromosome[i] < 0.25) {
-				solucion += 'A';
-			} else if(chromosome[i] >= 0.25 && chromosome[i] < 0.5) {
-				solucion += 'G';
-			} else if(chromosome[i] >= 0.5 && chromosome[i] < 0.75) {
-				solucion += 'T';
-			} else if(chromosome[i] >= 0.75 && chromosome[i] < 1) {
-				solucion += 'C';
-			}
-		}
-		std::cout << "solucion: " << solucion << std::endl;
+        //traduccion a caracteres
+        for(unsigned i = 0; i < size; i++) {
+            if(chromosome[i] < 0.25) {
+                solucion += 'A';
+            } else if(chromosome[i] >= 0.25 && chromosome[i] < 0.5) {
+                solucion += 'G';
+            } else if(chromosome[i] >= 0.5 && chromosome[i] < 0.75) {
+                solucion += 'T';
+            } else if(chromosome[i] >= 0.75 && chromosome[i] < 1) {
+                solucion += 'C';
+            }
+        }
 
-		myFitness= calidad_solucion(dataset, treshold, solucion);
-		
-		myFitness = myFitness*-1;
 
-		// Return the fitness:
-		return myFitness;
-	}
 
+        static std::mutex mtx;
+        std::lock_guard<std::mutex> lock(mtx);
+
+        myFitness = calidad_solucion(dataset, treshold, solucion);
+
+        myFitness = myFitness * -1;
+
+        // Return the fitness:
+        return myFitness;
+    }
 };
 
 #endif
