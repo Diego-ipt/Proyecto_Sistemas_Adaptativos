@@ -14,7 +14,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
     
     if (argc < 4 || string(argv[1]) != "-i" || string(argv[3]) != "-th") {
-        cerr << "Usar: " << argv[0] << " -i <instancia-problema> -th threshold" << endl;
+        cerr << "Usar: " << argv[0] << " -i <instancia-problema> -th threshold [-t maxsecs] [-alpha alpha]" << endl;
         return 1;
     }
     string inputFileName = argv[2];
@@ -25,8 +25,10 @@ int main(int argc, char* argv[]) {
     double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
     double alpha= 1.0;
+    int maxsecs = -1;
 
-    // Leer parametro opcional -alpha
+    // Verificar si se usa el modo tuning y alfa
+    int tuningMode = false;
     for (int i = 5; i < argc; ++i) {
         if (string(argv[i]) == "-alpha" && i + 1 < argc) {
             alpha = stod(argv[i + 1]);
@@ -34,7 +36,15 @@ int main(int argc, char* argv[]) {
                 cerr << "El valor de alpha debe estar entre 0 y 1." << endl;
                 return 1;
             }
-            i++;
+            i++; // Skip the next argument because it's part of -alpha
+        }
+        else if (string(argv[i]) == "-tuning" && i + 1 < argc && string(argv[i + 1]) == "1") {
+            tuningMode = true;  // Set tuning mode to true
+            i++; // Skip the next argument because it's part of -tuning
+        }
+        else if (string(argv[i]) == "-t" && i + 1 < argc) {
+            maxsecs = stoi(argv[i + 1]);
+            i++; // Skip the next argument because it's part of -t
         }
     }
 
@@ -44,12 +54,18 @@ int main(int argc, char* argv[]) {
 
     auto start = chrono::high_resolution_clock::now();
     string solution = greedyHeuristicFFMS(input_data, M, substring_to_index, index_to_substring, threshold, alpha);
-    double calidad = trunc(calidad_solucion(input_data, threshold, solution))/input_data.size();
+    double calidad_sin_norm = trunc(calidad_solucion(input_data, threshold, solution));
+    double calidad = calidad_sin_norm  /input_data.size();
+    double calidad_tuning = calidad_sin_norm * -1.0; // Se invierte la calidad para el modo tuning
     auto end = chrono::high_resolution_clock::now();
     double tiempo_ejecucion = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
-    cout<< tiempo_ejecucion << endl; // tiempo de ejecucion en ms
-    cout << calidad << endl;
+    if (tuningMode) {
+        cout << calidad_tuning;
+    } else {
+        cout << "Calidad: " << calidad << endl;
+        cout << "Tiempo de ejecución: " << tiempo_ejecucion << " ms" << endl;
+    }
 
     /*
     ofstream outputFile("results_greedy.csv", ios::app);
