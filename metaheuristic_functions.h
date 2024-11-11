@@ -100,7 +100,7 @@ string generateNeighborSolutionRandom(int size, unordered_map<int, string> index
     return neighbor_solutions;
 }
 
-void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds=10, int threshold) {
+void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds=10, int threshold, double temperature, double cooling_rate, bool tuningMode) {
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
@@ -188,9 +188,15 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         cooling_rate = 0.99 + (0.01 * (elapsed_time / max_time_seconds));
         //printf("%f\n", temperature);
     }
+    if(tuningMode){
+        double tuning_quality =trunc(best_quality)*-1;
+        cout << tuning_quality<< endl;
+    }
+    else{
+        cout << (trunc(best_quality)) << " "<< time;                
+        printf("\n%s", best_solution.c_str()); 
+    }
 
-    cout << (trunc(best_quality)) << " "<< time;                
-    printf("\n%s", best_solution.c_str());
 }
 
 #endif
