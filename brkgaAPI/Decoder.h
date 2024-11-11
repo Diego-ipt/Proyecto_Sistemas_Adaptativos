@@ -65,10 +65,7 @@ public:
     Decoder(){};	// Constructor
     ~Decoder(){};	// Destructor
 
-    // Decode a chromosome, returning its fitness as a double-precision floating point:
-    double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<std::string>& dataset) const{
-        double myFitness = 0.0;
-
+    std::string traduccion(const std::vector< double >& chromosome) const {
         std::string solucion = "";
         int size = chromosome.size();
 
@@ -84,8 +81,14 @@ public:
                 solucion += 'C';
             }
         }
+        return solucion;
+    }
 
+    // Decode a chromosome, returning its fitness as a double-precision floating point:
+    double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<std::string>& dataset) const{
+        double myFitness = 0.0;
 
+        std::string solucion = traduccion(chromosome);
 
         static std::mutex mtx;
         std::lock_guard<std::mutex> lock(mtx);

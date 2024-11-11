@@ -6,6 +6,8 @@
 #include "loadinputdata.h"
 #include <string>
 
+using namespace std;
+
 int main(int argc, char* argv[]) {
     // Verificar que se han proporcionado todos los argumentos
     if (argc < 7 || string(argv[2]) != "-i" || string(argv[4]) != "-t" || string(argv[6]) != "-th") {
@@ -51,28 +53,30 @@ int main(int argc, char* argv[]) {
 	const unsigned MAX_GENS = 1000;	// run for 1000 gens
     clock_t start_time = clock();
 
-	std::cout << "Running for " << max_time_seconds << " seconds..." << std::endl;
+	int fitness_act = 0;
+	string best_chromosome = "";
+	int time = 0;
+	
 	do {
 		algorithm.evolve();	// evolve the population for one generation
 		
+		if(fitness_act < trunc(-1*algorithm.getBestFitness())) {
+			fitness_act = trunc(-1*algorithm.getBestFitness());
+			time = (clock() - start_time) / CLOCKS_PER_SEC;
+			//calidad y tiempo en que la encontró
+			cout << fitness_act << " " << time << endl;
+		}
+
 		if((++generation) % X_INTVL == 0) {
 			algorithm.exchangeElite(X_NUMBER);	// exchange top individuals
 		}
 	} while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds);
 	
-	// print the fitness of the top 10 individuals of each population:
-	std::cout << "Fitness of the top 10 individuals of each population:" << std::endl;
-	const unsigned bound = std::min(p, unsigned(10));	// makes sure we have 10 individuals
-	for(unsigned i = 0; i < K; ++i) {
-		std::cout << "Population #" << i << ":" << std::endl;
-		for(unsigned j = 0; j < bound; ++j) {
-			std::cout << "\t" << j << ") "
-					<< trunc(-1*algorithm.getPopulation(i).getFitness(j)) << std::endl;
-		}
-	}
-	
-	std::cout << "Best solution found has objective value = " << trunc(-1*algorithm.getBestFitness()) << std::endl;
-	
-	
+	best_chromosome = decoder.traduccion(algorithm.getBestChromosome());
+
+	cout << best_chromosome << endl;
+	//se repite nuevamente la calidad y el tiempo en que fue encontrada
+	cout << fitness_act << " " << time << endl;
+
 	return 0;
 }
