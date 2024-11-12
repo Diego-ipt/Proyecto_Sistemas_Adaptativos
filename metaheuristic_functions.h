@@ -146,7 +146,9 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
                 time=(clock() - start_time) / CLOCKS_PER_SEC;
-                cout << (trunc(best_quality)) << " "<< time << endl;
+                if(tuningMode==false){
+                    cout << (trunc(best_quality)) << " "<< time << endl;
+                }
                 current_solution = new_solution;
                 iterations_without_improvement=0;
             }else {
