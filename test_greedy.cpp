@@ -24,7 +24,8 @@ int main(int argc, char* argv[]) {
     vector<string> input_data = loadInputData(inputFileName);
     double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
-    double alpha= 1.0;
+    //Default best value for alpha from irace tuning
+    double alpha= 0.49;
     int maxsecs = -1;
 
     // Verificar si se usa el modo tuning y alfa

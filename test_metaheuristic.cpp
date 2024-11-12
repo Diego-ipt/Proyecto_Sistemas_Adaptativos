@@ -17,7 +17,7 @@
 int main(int argc, char* argv[]) {
     // Verificar que se han proporcionado todos los argumentos
     if (argc < 7 || string(argv[2]) != "-i" || string(argv[4]) != "-t" || string(argv[6]) != "-th") {
-        cerr << "Uso: " << argv[0] << " <nombremetaheuristica> -i <instancia-problema> -t <tiempo-max-segundos> -th <threshold>" << endl;
+        cerr << "Uso: " << argv[0] << " <nombremetaheuristica> -i <instancia-problema> -t <tiempo-max-segundos> -th <threshold> [-temperature <temp> -cooling_rate <cool> -tuning <0|1>]" << endl;
         return 1;
     }
     
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
     // Semilla aleatoria
     srand(I + 26999);
     // Llamada a la función de enfriamiento simulado
-    cooling_system(metaheuristic_name, input_data, max_time_seconds, threshold, temperature, cooling_rate, tuningMode);
+    cooling_system(metaheuristic_name, input_data, threshold, temperature, cooling_rate, tuningMode, max_time_seconds);
 
     return 0;
 }

@@ -100,7 +100,7 @@ string generateNeighborSolutionRandom(int size, unordered_map<int, string> index
     return neighbor_solutions;
 }
 
-void cooling_system(const string& metaheuristic_name, const vector<string>& dataset, int max_time_seconds=10, int threshold, double temperature, double cooling_rate, bool tuningMode) {
+void cooling_system(const string& metaheuristic_name, const vector<string>& dataset,  int threshold, double temperature, double cooling_rate, bool tuningMode, int max_time_seconds=10) {
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
@@ -110,9 +110,7 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
     double best_quality = calidad_solucion(dataset, threshold, best_solution);
     int dataset_size= dataset.size();
     int best_solution_size = best_solution.size();
-    // Simulated Annealing parameters
-    double temperature = 1000.0;
-    double cooling_rate = 0.99;
+    
     clock_t start_time = clock();
     int time;
 
