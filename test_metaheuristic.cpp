@@ -26,11 +26,23 @@ int main(int argc, char* argv[]) {
     int max_time_seconds = stoi(argv[5]);         // Tiempo máximo en segundos
     double threshold = stod(argv[7]);             // Umbral (threshold)
 
-    // Parámetros opcionales
-    double temperature = 1000.0;                      // Default temperature
-    double cooling_rate = 0.99;                      // Default cooling rate
-    bool tuningMode = false;                         // Flag for tuning mode
+    // Parámetros opcionales tuneados por irace
 
+    //Threshold 0.75:
+
+    double temperature = 940.0;                      // Default temperature
+    double cooling_rate = 0.15;                      // Default cooling rate
+    bool tuningMode = false;                         // Flag for tuning mode
+    /* Threshold 0.8:
+    double temperature = 601;
+    double cooling_rate = 0.95;
+    bool tuningMode = false;
+    */
+    /* Threshold 0.85
+    double temperature = 703;
+    double cooling_rate = 0.45;
+    bool tuningMode = false;
+    */
     // Parse 
     for (int i = 8; i < argc; ++i) {
         if (string(argv[i]) == "-tuning" && i + 1 < argc && string(argv[i + 1]) == "1") {
