@@ -25,7 +25,9 @@ int main(int argc, char* argv[]) {
     double threshold = stod(argv[4])*M; // porcentaje de longitud M
     srand(I + 26999); //random seed 
     //Default best value for alpha from irace tuning
-    double alpha= 0.49;
+    double alpha= 0.99; // Default value for alpha for threshold 0.75
+    //double alpha = 0.73 // Default value for alpha for threshold 0.8
+    //double alpha = 0.87 // Default value for alpha for threshold 0.85
     int maxsecs = -1;
 
     // Verificar si se usa el modo tuning y alfa

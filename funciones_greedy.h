@@ -110,7 +110,7 @@ vector<int> compressString(const string& input, const unordered_map<string, int>
 
 
 string greedyHeuristicFFMS(const vector<string>& dataset, int long_cadenas, const unordered_map<string,int>& substring_to_index, 
-const unordered_map<int, string>& index_to_substring, int threshold, double alpha = 1.0) {
+const unordered_map<int, string>& index_to_substring, int threshold, double alpha = 0.99) {
 
     // matriz de posiciones de los substrings
     vector<vector<int>> positions;
