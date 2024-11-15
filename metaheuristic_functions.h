@@ -143,10 +143,11 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
 
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
             if (neighbor_quality > best_quality) {
+                int aux_best = trunc(best_quality);
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
                 time=(clock() - start_time) / CLOCKS_PER_SEC;
-                if(tuningMode==false){
+                if(tuningMode==false && (trunc(best_quality) > aux_best)){
                     cout << (trunc(best_quality)) << " "<< time << endl;
                 }
                 current_solution = new_solution;
@@ -193,8 +194,8 @@ void cooling_system(const string& metaheuristic_name, const vector<string>& data
         cout << tuning_quality<< endl;
     }
     else{
+        cout << best_solution << endl;
         cout << (trunc(best_quality)) << " "<< time;                
-        printf("\n%s", best_solution.c_str()); 
     }
 
 }
