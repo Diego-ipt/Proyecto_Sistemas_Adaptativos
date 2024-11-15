@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 	unsigned X_INTVL = 100;	// exchange best individuals at every 100 generations --puede variar
 	unsigned X_NUMBER = 2;	// exchange top 2 best --puede variar
 	int max_time_seconds = 10;	
-
+	bool tuningMode = false; // Default: no tuning
 
     // Verificar que se han proporcionado los argumentos mínimos obligatorios
     if (argc < 5 || string(argv[2]) != "-i" || string(argv[4]) != "-th") {
@@ -30,7 +30,8 @@ int main(int argc, char* argv[]) {
              << "  -pm <mutant fraction>\n"
              << "  -rhoe <elite allele inheritance prob>\n"
              << "  -X_INTVL <exchange best individuals every X gens>\n"
-             << "  -X_NUMBER <number of top to exchange>" << endl;
+             << "  -X_NUMBER <number of top to exchange>"
+			 << "  -tuning <0|1> Enable tuning mode (default: 0)" << endl;
         return 1;
     }
 
@@ -49,6 +50,7 @@ int main(int argc, char* argv[]) {
         else if (opt == "-rhoe") rhoe = stod(argv[i + 1]);
         else if (opt == "-X_INTVL") X_INTVL = stoi(argv[i + 1]);
         else if (opt == "-X_NUMBER") X_NUMBER = stoi(argv[i + 1]);
+		else if (opt == "-tuning") tuningMode = (stoi(argv[i + 1]) != 0);
     }
 
     // Procesar archivo de entrada
@@ -89,7 +91,7 @@ int main(int argc, char* argv[]) {
 			fitness_act = trunc(-1*algorithm.getBestFitness());
 			time = (clock() - start_time) / CLOCKS_PER_SEC;
 			//calidad y tiempo en que la encontró
-			cout << fitness_act << " " << time << endl;
+			if(!tuningMode) {cout << fitness_act << " " << time << endl;}
 		}
 
 		if((++generation) % X_INTVL == 0) {
@@ -98,10 +100,15 @@ int main(int argc, char* argv[]) {
 	} while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds);
 	
 	best_chromosome = decoder.traduccion(algorithm.getBestChromosome());
-
+	if(!tuningMode){
 	cout << best_chromosome << endl;
 	//se repite nuevamente la calidad y el tiempo en que fue encontrada
 	cout << fitness_act << " " << time << endl;
+	}
+	else{
+		int irace_minmax = -fitness_act;
+		cout << irace_minmax << endl;
+	}
 
 	return 0;
 }
