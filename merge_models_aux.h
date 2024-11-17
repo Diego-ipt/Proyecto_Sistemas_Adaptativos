@@ -14,6 +14,8 @@
 #include "metaheuristic_functions.h"
 #include "brkgaAPI/BRKGA.h"
 #include "brkgaAPI/MTRand.h"
+#include <vector>
+#include <ilcplex/ilocplex.h>
 
 using namespace std;
 
@@ -177,8 +179,59 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
     return make_pair(best_solution, best_quality);
 }
 
-//Funcion de cruzamiento
-/*usar cmsa y cplex*/
+//Funcion de cruzamiento usando CPLEX
+string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const unordered_map<string, int>& substring_to_index, const unordered_map<int, string>& index_to_substring, const vector<string>& dataset) {
+    IloEnv env;
+    try {
+        IloModel model(env);
+        IloCplex cplex(model);
+
+        int n = parent1.size();
+        IloArray<IloBoolVarArray> x(env, n);
+        for (int i = 0; i < n; ++i) {
+            x[i] = IloBoolVarArray(env, 2);
+        }
+
+        // Objective function: maximize the quality of the solution
+        /*arreglar para usar de manera correcta la funcion de calidad
+        IloExpr objective(env);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < 2; ++j) {            
+                objective += x[i][j] * calidad_solucion({parent1, parent2}, threshold, getSubstringByPosition(index_to_substring, j));
+                OR
+                objective += x[i][j] * calidad_solucion(dataset, threshold, getSubstringByPosition(index_to_substring, j));
+            }
+        }
+        */
+        model.add(IloMaximize(env, objective));
+
+        // Constraints: each position in the child must be taken from either parent1 or parent2
+        for (int i = 0; i < n; ++i) {
+            model.add(x[i][0] + x[i][1] == 1);
+        }
+
+        // Solve the model
+        cplex.solve();
+
+        // Construct the child solution
+        string child_solution;
+        for (int i = 0; i < n; ++i) {
+            if (cplex.getValue(x[i][0]) > 0.5) {
+                child_solution += parent1[i];
+            } else {
+                child_solution += parent2[i];
+            }
+        }
+
+        return child_solution;
+    } catch (IloException& e) {
+        cerr << "Concert exception caught: " << e << endl;
+    } catch (...) {
+        cerr << "Unknown exception caught" << endl;
+    }
+    env.end();
+    return "";
+}
 
 //Poblaciones restringidas
 class DecoderATCG {
