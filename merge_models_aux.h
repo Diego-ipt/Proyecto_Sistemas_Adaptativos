@@ -75,7 +75,7 @@ vector<string> generateNeighborSolution_plus(const string& current_solution,unor
 
 //Funcion (mutacion direccionada por temperatura)
 // variables de tunning: max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate
-pair<string, double> cooling_system_plus(const vector<string>& dataset,  int threshold,int max_error, double temperature_pert,double temperature_leap , double cooling_rate, double heat_rate, bool tuningMode, int max_time_seconds) {
+pair<string, double> cooling_system_plus(const vector<string>& dataset,  int threshold,int max_error, double temperature_pert,double temperature_leap , double cooling_rate, double heat_rate, bool tuningMode, int max_time_seconds, int iteraciones_max) {
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
@@ -103,7 +103,8 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
     int iterations_without_improvement = 0;
     string solution_random;
     double neighbor_solution_quality_in;
-    while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds) {
+    int iteracion_actual=0;
+    while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds && iteraciones_max>iteracion_actual) {
         // Calculate the size of the parts to replace
         part_size = size_calculator(temperature_pert/temperature_pert_max, best_solution_size); // Ensure part_size is a multiple of 3
         random_position = rand() % (best_solution_size - part_size + 1);
@@ -167,6 +168,7 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
         elapsed_time = (clock() - start_time) / CLOCKS_PER_SEC;
         cooling_rate = 0.99 + (0.01 * (elapsed_time / max_time_seconds));
         //printf("%f\n", temperature);
+        iteracion_actual++;
     }
     if(tuningMode){
         double tuning_quality =trunc(best_quality)*-1;
@@ -180,7 +182,7 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
 }
 
 //Funcion de cruzamiento usando CPLEX
-string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const unordered_map<string, int>& substring_to_index, const unordered_map<int, string>& index_to_substring, const vector<string>& dataset) {
+string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset) {
     IloEnv env;
     try {
         IloModel model(env);
