@@ -3,7 +3,9 @@
     {
       "name": "windows-gcc-x64",
       "includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/**",
+        "C:/Program Files/IBM/ILOG/CPLEX_Studio_Community2211/cplex/include/ilcplex",
+        "C:/Program Files/IBM/ILOG/CPLEX_Studio_Community2211/cplex/include"
       ],
       "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
       "cStandard": "${default}",
