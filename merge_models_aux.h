@@ -89,8 +89,8 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
     clock_t start_time = clock();
     int time;
 
-    double temperature_pert_max=temperature_pert;
-    double temperature_leap_max=temperature_leap;
+    double temperature_pert_max=1000;
+    double temperature_leap_max=1000;
 
 
     // Simulated Annealing loop
@@ -142,7 +142,7 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
             temperature_leap=temperature_leap_max; //reset search temperature
             iterations_without_improvement = 0; // Reiniciar el contador
             while (true) {
-                temperature_leap_max=temperature_leap_max*heat_rate;
+                temperature_leap=temperature_leap*heat_rate;
                 // Calculate the size of the parts to replace
                 part_size = size_calculator(temperature_leap/temperature_leap_max, best_solution_size);
                 random_position = rand() % (best_solution_size - part_size + 1);
@@ -166,7 +166,7 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
 
         // Incrementar el cooling rate proporcionalmente al tiempo transcurrido
         elapsed_time = (clock() - start_time) / CLOCKS_PER_SEC;
-        cooling_rate = 0.99 + (0.01 * (elapsed_time / max_time_seconds));
+        cooling_rate = cooling_rate + (0.01 * (elapsed_time / max_time_seconds));
         //printf("%f\n", temperature);
         iteracion_actual++;
     }

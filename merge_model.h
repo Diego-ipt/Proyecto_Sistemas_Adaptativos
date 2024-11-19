@@ -22,27 +22,32 @@ struct Individual {
 };
 
 // Función para generar la población inicial usando DecoderATCG
-vector<Individual> initializePopulation(int population_size, int seleccion, const vector<string>& dataset, double threshold) {
+vector<Individual> initializePopulation(int N_evolves, int population_size,int population_size_return, int seleccion, const vector<string>& dataset, double threshold) {
     DecoderATCG decoder(seleccion);
     vector<Individual> population;
 
-    for (int i = 0; i < population_size; ++i) {
-        vector<double> chromosome(dataset[0].size(), 0.0);
-        for (double& gene : chromosome) {
-            gene = static_cast<double>(rand()) / RAND_MAX;
-        }
-        string solution = decoder.traduccion(chromosome);
+    const unsigned n = dataset[0].size(); // size of chromosomes
+    const unsigned K = 1; // number of independent populations
+    const unsigned MAXT = 1; // number of threads for parallel decoding
+
+    const double pe = 0.10; // fraction of population to be the elite-set
+    const double pm = 0.10; // fraction of population to be replaced by mutants
+    const double rhoe = 0.70; // probability that offspring inherit an allele from elite parent
+
+    const long unsigned rngSeed = 0; // seed to the random number generator
+    MTRand rng(rngSeed); // initialize the random number generator
+
+    BRKGA<DecoderATCG, MTRand> algorithm(n, population_size, pe, pm, rhoe, decoder, rng, threshold, dataset, K, MAXT);
+
+    for (unsigned generation = 0; generation < N_evolves; ++generation) {
+        algorithm.evolve(); // evolve the population for one generation
+    }
+
+    for (unsigned i = 0; i < population_size_return; ++i) {
+        string solution = decoder.traduccion(algorithm.getBestChromosome());
         double fitness = calidad_solucion(dataset, threshold, solution);
         population.push_back({solution, fitness});
     }
-
-    // Ordenar la población por fitness
-    sort(population.begin(), population.end(), [](const Individual& a, const Individual& b) {
-        return a.fitness > b.fitness;
-    });
-
-    // Seleccionar los X mejores individuos
-    population.resize(population_size);
 
     return population;
 }
@@ -61,13 +66,13 @@ Individual mutate(const Individual& individual, const vector<string>& dataset, i
 }
 
 // Función principal del algoritmo genético
-void geneticAlgorithm_merge(int population_size, int random_population_size, const vector<string>& dataset, double threshold, int max_time_genetic, int max_error, double temperature_pert, double temperature_leap, double cooling_rate, double heat_rate, bool tuningMode, int max_time_seconds_mutation, int iteraciones_max, int elite_count) {
+void geneticAlgorithm_merge(int init_population, int init_evolves,int population_size, int random_population_size, int elite_count, const vector<string>& dataset, double threshold, int max_time_genetic, int max_error, double temperature_pert, double temperature_leap, double cooling_rate, double heat_rate, bool tuningMode, int max_time_seconds_mutation, int iteraciones_max) {
     // Inicializar la población
     vector<Individual> population;
     int seleccion;
     for(int i = 1; i < 7; i++){
         seleccion = i;
-        vector<Individual> new_population = initializePopulation(population_size/6, seleccion, dataset, threshold);
+        vector<Individual> new_population = initializePopulation(init_evolves, init_population, population_size/6, seleccion, dataset, threshold);
         population.insert(population.end(), new_population.begin(), new_population.end());
     }
 
