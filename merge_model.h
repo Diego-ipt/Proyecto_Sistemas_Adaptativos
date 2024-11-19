@@ -30,9 +30,9 @@ vector<Individual> initializePopulation(int N_evolves, int population_size,int p
     const unsigned K = 1; // number of independent populations
     const unsigned MAXT = 1; // number of threads for parallel decoding
 
-    const double pe = 0.10; // fraction of population to be the elite-set
-    const double pm = 0.10; // fraction of population to be replaced by mutants
-    const double rhoe = 0.70; // probability that offspring inherit an allele from elite parent
+    const double pe = 0.27; // fraction of population to be the elite-set
+    const double pm = 0.07; // fraction of population to be replaced by mutants
+    const double rhoe = 0.60; // probability that offspring inherit an allele from elite parent
 
     const long unsigned rngSeed = 0; // seed to the random number generator
     MTRand rng(rngSeed); // initialize the random number generator
