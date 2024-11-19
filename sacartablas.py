@@ -82,6 +82,6 @@ def main(base_path, output_dir):
 
 # Example usage
 if __name__ == '__main__':
-    base_path = '~/Ejecuciones/'  # Replace with your actual path
+    base_path = './Ejecuciones/'  # Replace with your actual path
     output_dir = './results_export'  # Directory to save CSV files
     main(base_path, output_dir)
