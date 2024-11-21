@@ -66,8 +66,7 @@ int main(int argc, char* argv[]) {
     if (tuningMode) {
         cout << calidad_tuning;
     } else {
-        cout << "Calidad: " << calidad << endl;
-        cout << "Tiempo de ejecución: " << tiempo_ejecucion << " ms" << endl;
+        cout << trunc(calidad_solucion(input_data, threshold, solution)) << " " << tiempo_ejecucion << endl;
     }
 
     /*
