@@ -73,7 +73,9 @@ int main(int argc, char* argv[]) {
     srand(I + 26999);
 
     // Run the genetic algorithm
-    geneticAlgorithm_merge(population_size, random_population_size, generations, dataset, threshold, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, tuningMode, max_time_seconds, iteraciones_max, elite_count);
-
+    geneticAlgorithm_merge(population_size, generations, population_size, 
+    random_population_size, elite_count, dataset, threshold, max_time_seconds, 
+    max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, tuningMode, 
+    max_time_seconds, iteraciones_max);
     return 0;
 }

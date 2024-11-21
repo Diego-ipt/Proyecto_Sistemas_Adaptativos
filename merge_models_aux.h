@@ -15,7 +15,7 @@
 #include "brkgaAPI/BRKGA.h"
 #include "brkgaAPI/MTRand.h"
 #include <vector>
-#include <ilcplex/ilocplex.h>
+//#include <ilcplex/ilocplex.h>
 
 using namespace std;
 
@@ -180,7 +180,7 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
     }
     return make_pair(best_solution, best_quality);
 }
-
+/*
 //Funcion de cruzamiento usando CPLEX
 string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset) {
     IloEnv env;
@@ -195,7 +195,7 @@ string crossover_using_cplex(const string& parent1, const string& parent2, int t
         }
 
         // Objective function: maximize the quality of the solution
-        /*arreglar para usar de manera correcta la funcion de calidad
+        //arreglar para usar de manera correcta la funcion de calidad
         IloExpr objective(env);
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < 2; ++j) {            
@@ -204,7 +204,7 @@ string crossover_using_cplex(const string& parent1, const string& parent2, int t
                 objective += x[i][j] * calidad_solucion(dataset, threshold, getSubstringByPosition(index_to_substring, j));
             }
         }
-        */
+        
         model.add(IloMaximize(env, objective));
 
         // Constraints: each position in the child must be taken from either parent1 or parent2
@@ -234,19 +234,42 @@ string crossover_using_cplex(const string& parent1, const string& parent2, int t
     env.end();
     return "";
 }
+*/
+
+string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset){
+
+    string child_solution = parent1.substr(0, parent1.size() / 2) + parent2.substr(parent2.size() / 2);
+    return child_solution;
+}
 
 //Poblaciones restringidas
 class DecoderATCG {
 public:
     // La seleccion debe ser entre 1 y 6
     DecoderATCG(int seleccion) : seleccion(seleccion) {}
-    ~DecoderATCG(){};
+    ~DecoderATCG(){}
+
+    // Make decode method public
+    double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<std::string>& dataset) const {
+        double myFitness = 0.0;
+
+        std::string solucion = traduccion(chromosome);
+
+        static std::mutex mtx;
+        std::lock_guard<std::mutex> lock(mtx);
+
+        myFitness = calidad_solucion(dataset, treshold, solucion);
+
+        myFitness = myFitness * -1;
+
+        // Return the fitness:
+        return myFitness;
+    }
 
 private:
     int seleccion;
 
     string traduccion(const vector<double>& chromosome) const {
-
         vector<char> alphabet = {'X', 'Y'};
         string solucion = "";
         int size = chromosome.size();
@@ -271,24 +294,6 @@ private:
         }
         return solucion;
     }
-
-    // Decode a chromosome, returning its fitness as a double-precision floating point:
-    double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<std::string>& dataset) const{
-        double myFitness = 0.0;
-
-        std::string solucion = traduccion(chromosome);
-
-        static std::mutex mtx;
-        std::lock_guard<std::mutex> lock(mtx);
-
-        myFitness = calidad_solucion(dataset, treshold, solucion);
-
-        myFitness = myFitness * -1;
-
-        // Return the fitness:
-        return myFitness;
-    }
 };
-
 #endif
 

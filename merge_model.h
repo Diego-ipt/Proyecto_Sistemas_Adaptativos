@@ -44,7 +44,12 @@ vector<Individual> initializePopulation(int N_evolves, int population_size,int p
     }
 
     for (unsigned i = 0; i < population_size_return; ++i) {
-        string solution = decoder.traduccion(algorithm.getBestChromosome());
+        vector<double> best_chromosome = algorithm.getBestChromosome();
+        string solution = "";
+        for (double gene : best_chromosome) {
+            solution += to_string(gene) + " ";
+        }
+        solution.pop_back(); // Remove the trailing space
         double fitness = calidad_solucion(dataset, threshold, solution);
         population.push_back({solution, fitness});
     }
@@ -78,7 +83,8 @@ void geneticAlgorithm_merge(int init_population, int init_evolves,int population
 
     // variable para la creacion de sujetos randoms
     unordered_map<int, string> index_to_substring;
-    generateSubstrings(index_to_substring);
+    unordered_map<string, int> substring_to_index;
+    generateSubstrings(substring_to_index,index_to_substring);
 
     auto start_time = chrono::steady_clock::now();
     int generations = 0;
