@@ -20,6 +20,6 @@ declare -a CONF_BIN=(
 
 #for i in {1..10}
 #do
-echo  /home/shared/sisadapt3/bin/random_greedy -i ${1} -th 0.75 -t 10 ${CONF_BIN[$SLURM_ARRAY_TASK_ID]} >"/home/shared/sisadapt3/Ejecuciones/greedy/th0.75/${2}_${SLURM_ARRAY_TASK_ID}"
-/home/shared/sisadapt3/bin/random_greedy -i ${1} -th 0.75 -t 10 ${CONF_BIN[$SLURM_ARRAY_TASK_ID]} >>"/home/shared/sisadapt3/Ejecuciones/greedy/th0.75/${2}_${SLURM_ARRAY_TASK_ID}"
+echo  /home/shared/sisadapt3/bin/random_greedy -i ${1} -th 0.75 ${CONF_BIN[$SLURM_ARRAY_TASK_ID]} >"/home/shared/sisadapt3/Ejecuciones/greedy/th0.75/${2}_${SLURM_ARRAY_TASK_ID}"
+/home/shared/sisadapt3/bin/random_greedy -i ${1} -th 0.75 ${CONF_BIN[$SLURM_ARRAY_TASK_ID]} >>"/home/shared/sisadapt3/Ejecuciones/greedy/th0.75/${2}_${SLURM_ARRAY_TASK_ID}"
 #done
