@@ -71,7 +71,10 @@ Individual mutate(const Individual& individual, const vector<string>& dataset, i
 }
 
 // Función principal del algoritmo genético
-void geneticAlgorithm_merge(int init_population, int init_evolves,int population_size, int random_population_size, int elite_count, const vector<string>& dataset, double threshold, int max_time_genetic, int max_error, double temperature_pert, double temperature_leap, double cooling_rate, double heat_rate, bool tuningMode, int max_time_seconds_mutation, int iteraciones_max) {
+void geneticAlgorithm_merge(int init_population, int init_evolves,int population_size, 
+int random_population_size, double pm, int elite_count, const vector<string>& dataset, double threshold, 
+int max_time_genetic, int max_error, double temperature_pert, double temperature_leap, double cooling_rate, 
+double heat_rate, bool tuningMode, int max_time_seconds_mutation, int iteraciones_max) {
     // Inicializar la población
     vector<Individual> population;
     int seleccion;
@@ -104,7 +107,10 @@ void geneticAlgorithm_merge(int init_population, int init_evolves,int population
 
         // Mutación
         for (Individual& individual : new_population) {
-            individual = mutate(individual, dataset, threshold, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, tuningMode, max_time_seconds_mutation, iteraciones_max);
+            if(rand() % 100 < pm * 100){
+            individual = mutate(individual, dataset, threshold, max_error, 
+            temperature_pert, temperature_leap, cooling_rate, heat_rate, tuningMode, max_time_seconds_mutation, iteraciones_max);
+            }
         }
 
         // Agregar parte de la población usando generateNeighborSolutionRandom
