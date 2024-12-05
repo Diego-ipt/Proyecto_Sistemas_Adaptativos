@@ -15,9 +15,14 @@
 #include "brkgaAPI/BRKGA.h"
 #include "brkgaAPI/MTRand.h"
 #include <vector>
-//#include <ilcplex/ilocplex.h>
+#include <ilcplex/ilocplex.h>
 
 using namespace std;
+
+//calidad particionada
+int calidad_particion(const vector<string>& dataset, const string& solution, int position_start) {
+
+}
 
 //Funcion para aceptar o rechazar una solucion en el simulated annealing
 bool accept_rate_plus(double best_quality, double neighbor_quality, double temperature_porcentual, int dataset_size) { 
@@ -53,7 +58,7 @@ vector<string> generateNeighborSolution_plus(const string& current_solution,unor
             new_solution[i] = (solution[j % num_columns] + static_cast<int>(j * 8));
             
             //perturbacion 
-            int random_position = (rand() % 8)*temperature;
+            int random_position = (rand() % 16)*temperature;
             if (rand() % 2) {
                 new_solution[i] += random_position;
             }else{
@@ -75,20 +80,10 @@ vector<string> generateNeighborSolution_plus(const string& current_solution,unor
 
 //Funcion (mutacion direccionada por temperatura)
 // variables de tunning: max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate
-pair<string, double> cooling_system_plus(const vector<string>& dataset,  int threshold,int max_error, double temperature_pert,double temperature_leap , double cooling_rate, double heat_rate, bool tuningMode, int max_time_seconds, int iteraciones_max) {
-    unordered_map<string, int> substring_to_index;
-    unordered_map<int, string> index_to_substring;
-    generateSubstrings(substring_to_index, index_to_substring);
-    // Initialize solution
-    string current_solution = generateInitialSolution(dataset, threshold, substring_to_index, index_to_substring);
+pair<string, double> cooling_system_plus(const vector<string>& dataset,string current_solution,double best_quality,  int threshold,int max_error, double temperature_pert,double temperature_leap , double cooling_rate, double heat_rate, int iteraciones_max, unordered_map<string, int> substring_to_index,unordered_map<int, string> index_to_substring) {
     string best_solution = current_solution;
-    double best_quality = calidad_solucion(dataset, threshold, best_solution);
     int dataset_size= dataset.size();
     int best_solution_size = best_solution.size();
-    
-    clock_t start_time = clock();
-    int time;
-
     double temperature_pert_max=1000;
     double temperature_leap_max=1000;
 
@@ -99,12 +94,12 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
     string sub_solution;
     vector<string> neighbor_solutions;
     string new_solution;
-    double elapsed_time;
     int iterations_without_improvement = 0;
     string solution_random;
     double neighbor_solution_quality_in;
     int iteracion_actual=0;
-    while ((clock() - start_time) / CLOCKS_PER_SEC < max_time_seconds && iteraciones_max>iteracion_actual) {
+
+    while (iteraciones_max>iteracion_actual) {
         // Calculate the size of the parts to replace
         part_size = size_calculator(temperature_pert/temperature_pert_max, best_solution_size); // Ensure part_size is a multiple of 3
         random_position = rand() % (best_solution_size - part_size + 1);
@@ -125,10 +120,6 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
                 int aux_best = trunc(best_quality);
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
-                time=(clock() - start_time) / CLOCKS_PER_SEC;
-                if(tuningMode==false && (trunc(best_quality) > aux_best)){
-                    cout << (trunc(best_quality)) << " "<< time << endl;
-                }
                 current_solution = new_solution;
                 iterations_without_improvement=0; //reset si se mejoro
             }else {
@@ -157,30 +148,21 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,  int thr
         
                 if (accept_rate_plus(best_quality, neighbor_solution_quality_in, temperature_leap/temperature_leap_max, dataset_size)) {
                     //cout<<".";//ayuda visual de probabilidad
-                    current_solution = new_solution;
+                    best_solution = new_solution;
+                    best_quality  = neighbor_solution_quality_in; 
                     break;
                 }
 
             }
         }
 
-        // Incrementar el cooling rate proporcionalmente al tiempo transcurrido
-        elapsed_time = (clock() - start_time) / CLOCKS_PER_SEC;
-        cooling_rate = cooling_rate + (0.01 * (elapsed_time / max_time_seconds));
+        cooling_rate = cooling_rate;
         //printf("%f\n", temperature);
         iteracion_actual++;
     }
-    if(tuningMode){
-        double tuning_quality =trunc(best_quality)*-1;
-        cout << tuning_quality<< endl;
-    }
-    else{
-        cout << best_solution << endl;
-        cout << (trunc(best_quality)) << " "<< time;                
-    }
     return make_pair(best_solution, best_quality);
 }
-/*
+
 //Funcion de cruzamiento usando CPLEX
 string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset) {
     IloEnv env;
@@ -195,13 +177,14 @@ string crossover_using_cplex(const string& parent1, const string& parent2, int t
         }
 
         // Objective function: maximize the quality of the solution
-        //arreglar para usar de manera correcta la funcion de calidad
         IloExpr objective(env);
         for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < 2; ++j) {            
-                objective += x[i][j] * calidad_solucion({parent1, parent2}, threshold, getSubstringByPosition(index_to_substring, j));
-                OR
-                objective += x[i][j] * calidad_solucion(dataset, threshold, getSubstringByPosition(index_to_substring, j));
+            for (int j = 0; j < 2; ++j) {
+                if (j == 0) {
+                    objective += x[i][j] * calidad_particion(dataset, parent1, i);
+                } else {
+                    objective += x[i][j] * calidad_particion(dataset, parent2, i);
+                }
             }
         }
         
@@ -234,9 +217,8 @@ string crossover_using_cplex(const string& parent1, const string& parent2, int t
     env.end();
     return "";
 }
-*/
-//xd
-string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset){
+
+string crossover_test(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset){
 
     string child_solution = parent1.substr(0, parent1.size() / 2) + parent2.substr(parent2.size() / 2);
     return child_solution;
