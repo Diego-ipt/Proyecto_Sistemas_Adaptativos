@@ -20,8 +20,22 @@
 using namespace std;
 
 //calidad particionada
-int calidad_particion(const vector<string>& dataset, const string& solution, int position_start) {
+int calidad_particion(const vector<string>& dataset, const string& substring, int position_start) {
+    int total_differences = 0;
+    int substring_length = substring.size();
 
+    for (const auto& str : dataset) {
+        if (position_start + substring_length <= str.size()) {
+            string substring_dataset = str.substr(position_start, substring_length);
+            for (int i = 0; i < substring_length; ++i) {
+                if (substring[i] != substring_dataset[i]) {
+                    ++total_differences;
+                }
+            }
+        }
+    }
+
+    return total_differences;
 }
 
 //Funcion para aceptar o rechazar una solucion en el simulated annealing
@@ -46,7 +60,9 @@ bool accept_rate_plus(double best_quality, double neighbor_quality, double tempe
 
 
 //Función para generar soluciones vecinas
-vector<string> generateNeighborSolution_plus(const string& current_solution,unordered_map<string, int> substring_to_index, unordered_map<int, string> index_to_substring, double temperature){
+vector<string> generateNeighborSolution_plus(const string& current_solution,
+unordered_map<string, int> substring_to_index, unordered_map<int, string> index_to_substring, 
+double temperature){
     vector<string> neighbor_solutions;
     vector<int> solution = compressString(current_solution, substring_to_index);
     int num_columns = solution.size();
@@ -164,35 +180,36 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,string cu
 }
 
 //Funcion de cruzamiento usando CPLEX
-string crossover_using_cplex(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset) {
+string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset) {
     IloEnv env;
     try {
         IloModel model(env);
         IloCplex cplex(model);
 
-        int n = parent1.size();
+        int n = parents[0].size();
+        int num_parents = parents.size();
         IloArray<IloBoolVarArray> x(env, n);
         for (int i = 0; i < n; ++i) {
-            x[i] = IloBoolVarArray(env, 2);
+            x[i] = IloBoolVarArray(env, num_parents);
         }
 
         // Objective function: maximize the quality of the solution
         IloExpr objective(env);
         for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < 2; ++j) {
-                if (j == 0) {
-                    objective += x[i][j] * calidad_particion(dataset, parent1, i);
-                } else {
-                    objective += x[i][j] * calidad_particion(dataset, parent2, i);
-                }
+            for (int j = 0; j < num_parents; ++j) {
+                objective += x[i][j] * calidad_particion(dataset, parents[j], i);
             }
         }
         
         model.add(IloMaximize(env, objective));
 
-        // Constraints: each position in the child must be taken from either parent1 or parent2
+        // Constraints: each position in the child must be taken from one of the parents
         for (int i = 0; i < n; ++i) {
-            model.add(x[i][0] + x[i][1] == 1);
+            IloExpr sum(env);
+            for (int j = 0; j < num_parents; ++j) {
+                sum += x[i][j];
+            }
+            model.add(sum == 1);
         }
 
         // Solve the model
@@ -201,10 +218,11 @@ string crossover_using_cplex(const string& parent1, const string& parent2, int t
         // Construct the child solution
         string child_solution;
         for (int i = 0; i < n; ++i) {
-            if (cplex.getValue(x[i][0]) > 0.5) {
-                child_solution += parent1[i];
-            } else {
-                child_solution += parent2[i];
+            for (int j = 0; j < num_parents; ++j) {
+                if (cplex.getValue(x[i][j]) > 0.5) {
+                    child_solution += parents[j][i];
+                    break;
+                }
             }
         }
 

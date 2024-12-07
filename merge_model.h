@@ -58,8 +58,8 @@ vector<Individual> initializePopulation(int N_evolves, int population_size,int p
 }
 
 // Función para realizar el cruce usando crossover_using_cplex
-Individual crossover(const Individual& parent1, const Individual& parent2, int threshold, const vector<string>& dataset) {
-    string child_solution = crossover_using_cplex(parent1.solution, parent2.solution, threshold, dataset);
+Individual crossover(const vector<string>& parents, int threshold, const vector<string>& dataset) {
+    string child_solution = crossover_using_cplex(parents, threshold, dataset);
     double child_fitness = calidad_solucion(dataset, threshold, child_solution);
     return {child_solution, child_fitness};
 }
@@ -73,6 +73,7 @@ int iteraciones_max, unordered_map<string, int> substring_to_index,unordered_map
 }
 
 // Función principal del algoritmo genético
+/*
 void geneticAlgorithm_merge_brkgainit(int init_population, int init_evolves,int population_size, 
 int random_population_size, double pm, int elite_count, const vector<string>& dataset, double threshold, 
 int max_time_genetic, int max_error, double temperature_pert, double temperature_leap, double cooling_rate, 
@@ -145,13 +146,14 @@ double heat_rate, bool tuningMode, int iteraciones_max) {
     // Imprimir la mejor solución encontrada
     cout << "Best solution: " << population[0].solution << " with fitness = " << population[0].fitness << endl;
 }
+*/
 
 void geneticAlgorithm_merge(int population_size, 
 int random_population_size, double pm, int elite_count, 
 const vector<string>& dataset, double threshold, 
 int max_time_genetic, int max_error, double temperature_pert, 
 double temperature_leap, double cooling_rate, 
-double heat_rate, bool tuningMode, int iteraciones_max) {
+double heat_rate, bool tuningMode, int iteraciones_max, int N_parents) {
     // Inicializar la población
     vector<Individual> population;
     unordered_map<string, int> substring_to_index;
@@ -164,27 +166,24 @@ double heat_rate, bool tuningMode, int iteraciones_max) {
         population.push_back({solution, fitness});
     }
 
-
-
-    // variable para la creacion de sujetos randoms
-    unordered_map<int, string> index_to_substring;
-    unordered_map<string, int> substring_to_index;
-    generateSubstrings(substring_to_index,index_to_substring);
-
     auto start_time = chrono::steady_clock::now();
     int generations = 0;
 
     while (chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_time).count() < max_time_genetic) {
         vector<Individual> new_population;
         
-
         // Selección y cruce
-        for (int i = 0; i < population_size / 2; ++i) {
-            int parent1_index = rand() % population.size();
-            int parent2_index = rand() % population.size();
-            const Individual& parent1 = population[parent1_index];
-            const Individual& parent2 = population[parent2_index];
-            Individual child = crossover(parent1, parent2, threshold, dataset);
+        for (int i = 0; i < population_size / N_parents; ++i) {
+            vector<string> parents;
+            // Seleccionar N_parents padres aleatorios
+            for (int j = 0; j < N_parents; ++j) {
+                int parent_index = rand() % population.size();
+                parents.push_back(population[parent_index].solution);
+                population.erase(population.begin() + parent_index);
+            }
+
+            // Crear un hijo a partir de N_parents
+            Individual child = crossover(parents, threshold, dataset);
             new_population.push_back(child);
         }
 
