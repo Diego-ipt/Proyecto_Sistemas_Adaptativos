@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
     double heat_rate = 1.05;
     bool tuningMode = false;
     int iteraciones_max = 1000;
+    int N_parents = 2; // Default value for N_parents
 
     // Verify that the minimum required arguments are provided
     // algorithm_name, inputFileName, threshold
@@ -35,7 +36,7 @@ int main(int argc, char* argv[]) {
     threshold = stod(argv[3]);
 
     // Process optional arguments
-    // population_size, random_population_size, pm, elite_count, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, tuningMode, iteraciones_max
+    // population_size, random_population_size, pm, elite_count, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, tuningMode, iteraciones_max, N_parents
     for (int i = 4; i < argc; i += 2) {
         string param = argv[i];
         if (param == "--population_size" && i + 1 < argc) {
@@ -60,6 +61,8 @@ int main(int argc, char* argv[]) {
             tuningMode = (string(argv[i + 1]) == "true");
         } else if (param == "--iteraciones_max" && i + 1 < argc) {
             iteraciones_max = stoi(argv[i + 1]);
+        } else if (param == "--N_parents" && i + 1 < argc) {
+            N_parents = stoi(argv[i + 1]);
         }
     }
 
@@ -75,9 +78,9 @@ int main(int argc, char* argv[]) {
     srand(I + 26999);
 
     // Run the genetic algorithm
-    geneticAlgorithm_merge(population_size, random_population_size, 
-    pm, elite_count, dataset, threshold, max_time_genetic, max_error, temperature_pert
-    , temperature_leap, cooling_rate, heat_rate, tuningMode, iteraciones_max);
+    geneticAlgorithm_merge(population_size, random_population_size, pm, 
+    elite_count, dataset, threshold, max_time_genetic, max_error, temperature_pert, 
+    temperature_leap, cooling_rate, heat_rate, tuningMode, iteraciones_max, N_parents);
 
     return 0;
 }

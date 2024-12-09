@@ -12,10 +12,10 @@
 #include <chrono>
 #include <unordered_map>
 #include "metaheuristic_functions.h"
-#include "brkgaAPI/BRKGA.h"
-#include "brkgaAPI/MTRand.h"
+//#include "brkgaAPI/BRKGA.h"
+//#include "brkgaAPI/MTRand.h"
 #include <vector>
-#include <ilcplex/ilocplex.h>
+//#include <ilcplex/ilocplex.h>
 
 using namespace std;
 
@@ -180,6 +180,7 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,string cu
 }
 
 //Funcion de cruzamiento usando CPLEX
+/*
 string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset) {
     IloEnv env;
     try {
@@ -235,14 +236,18 @@ string crossover_using_cplex(const vector<string>& parents, int threshold, const
     env.end();
     return "";
 }
+*/
 
-string crossover_test(const string& parent1, const string& parent2, int threshold, const vector<string>& dataset){
-
+//test
+string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset){
+    string parent1 = parents[0];
+    string parent2 = parents[1];
     string child_solution = parent1.substr(0, parent1.size() / 2) + parent2.substr(parent2.size() / 2);
     return child_solution;
 }
 
 //Poblaciones restringidas
+/*
 class DecoderATCG {
 public:
     // La seleccion debe ser entre 1 y 6
@@ -295,5 +300,7 @@ private:
         return solucion;
     }
 };
+*/
+
 #endif
 

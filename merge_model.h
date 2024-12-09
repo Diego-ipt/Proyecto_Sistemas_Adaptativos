@@ -22,6 +22,7 @@ struct Individual {
 };
 
 // Función para generar la población inicial usando DecoderATCG
+/*
 vector<Individual> initializePopulation(int N_evolves, int population_size,int population_size_return, int seleccion, const vector<string>& dataset, double threshold) {
     DecoderATCG decoder(seleccion);
     vector<Individual> population;
@@ -56,6 +57,8 @@ vector<Individual> initializePopulation(int N_evolves, int population_size,int p
 
     return population;
 }
+*/
+
 
 // Función para realizar el cruce usando crossover_using_cplex
 Individual crossover(const vector<string>& parents, int threshold, const vector<string>& dataset) {
