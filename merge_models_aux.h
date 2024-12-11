@@ -12,8 +12,6 @@
 #include <chrono>
 #include <unordered_map>
 #include "metaheuristic_functions.h"
-//#include "brkgaAPI/BRKGA.h"
-//#include "brkgaAPI/MTRand.h"
 #include <vector>
 //#include "ilcplex/ilocplex.h"
 
@@ -94,6 +92,19 @@ double temperature){
     return neighbor_solutions;
 }
 
+
+//Funcion para calcular el tamaño de la parte a reemplazar
+int size_calculator_plus(double temperature_porcentual, double solution_size){
+    int size_extra = solution_size/3;
+    int tercio_semi_aleatorio = temperature_porcentual*size_extra*(static_cast<double>(rand()) / RAND_MAX);
+    //asegurar que el multiplo sea menor que el tamaño de la solucion
+    int multiplo_tres = tercio_semi_aleatorio%(int(solution_size)/3);
+    multiplo_tres = multiplo_tres*3;
+    if (multiplo_tres == 0){
+        return 3;
+    }
+    return (multiplo_tres);
+}
 //Funcion (mutacion direccionada por temperatura)
 // variables de tunning: max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate
 pair<string, double> cooling_system_plus(const vector<string>& dataset,string best_solution,
@@ -120,7 +131,7 @@ unordered_map<int, string> index_to_substring) {
 
     while (iteraciones_max>iteracion_actual) {
         // Calculate the size of the parts to replace
-        part_size = size_calculator(temperature_pert/temperature_pert_max, best_solution_size); // Ensure part_size is a multiple of 3
+        part_size = size_calculator_plus(temperature_pert/temperature_pert_max, best_solution_size); // Ensure part_size is a multiple of 3
         random_position = rand() % (best_solution_size - part_size + 1);
         // Replace the parts with new random substrings
 
@@ -132,9 +143,11 @@ unordered_map<int, string> index_to_substring) {
         neighbor_solutions = generateNeighborSolution_plus(sub_solution, substring_to_index, 
         index_to_substring, temperature_pert/temperature_pert_max);
 
+
+        // Replace the original substring with the neighbor solution
+        new_solution = best_solution;
         for (const string& neighbor_solution : neighbor_solutions) {
-            // Replace the original substring with the neighbor solution
-            new_solution = best_solution;
+
             new_solution.replace(random_position, part_size, neighbor_solution);
 
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
@@ -156,7 +169,7 @@ unordered_map<int, string> index_to_substring) {
             while (true) {
                 temperature_leap=temperature_leap*heat_rate;
                 // Calculate the size of the parts to replace
-                part_size = size_calculator(temperature_leap/temperature_leap_max, best_solution_size);
+                part_size = size_calculator_plus(temperature_leap/temperature_leap_max, best_solution_size);
                 random_position = rand() % (best_solution_size - part_size + 1);
 
                 // Generate neighbor solutions for the substring
@@ -244,61 +257,6 @@ string crossover_using_cplex(const vector<string>& parents, int threshold, const
     return parents[0];
 }
 
-//Poblaciones restringidas
-/*
-class DecoderATCG {
-public:
-    // La seleccion debe ser entre 1 y 6
-    DecoderATCG(int seleccion) : seleccion(seleccion) {}
-    ~DecoderATCG(){}
-
-    // Make decode method public
-    double decode(const std::vector< double >& chromosome, const double treshold, const std::vector<std::string>& dataset) const {
-        double myFitness = 0.0;
-
-        std::string solucion = traduccion(chromosome);
-
-        static std::mutex mtx;
-        std::lock_guard<std::mutex> lock(mtx);
-
-        myFitness = calidad_solucion(dataset, treshold, solucion);
-
-        myFitness = myFitness * -1;
-
-        // Return the fitness:
-        return myFitness;
-    }
-
-private:
-    int seleccion;
-
-    string traduccion(const vector<double>& chromosome) const {
-        vector<char> alphabet = {'X', 'Y'};
-        string solucion = "";
-        int size = chromosome.size();
-
-        if(seleccion <= 3) {
-            if(seleccion == 1) alphabet = {'A', 'T'};
-            else if(seleccion == 2) alphabet = {'A', 'C'};
-            else alphabet = {'A', 'G'};
-        } else {
-            if(seleccion == 4) alphabet = {'T', 'G'};
-            else if(seleccion == 5) alphabet = {'T', 'C'};
-            else alphabet = {'C', 'G'};
-        }
-
-        //traduccion a caracteres
-        for(unsigned i = 0; i < size; i++) {
-            if(chromosome[i] < 0.5) {
-                solucion += alphabet[0];
-            } else{
-                solucion += alphabet[1];
-            }
-        }
-        return solucion;
-    }
-};
-*/
 
 #endif
 
