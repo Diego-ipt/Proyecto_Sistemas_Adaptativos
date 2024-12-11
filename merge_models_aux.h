@@ -15,7 +15,7 @@
 //#include "brkgaAPI/BRKGA.h"
 //#include "brkgaAPI/MTRand.h"
 #include <vector>
-//#include <ilcplex/ilocplex.h>
+//#include "ilcplex/ilocplex.h"
 
 using namespace std;
 
@@ -96,15 +96,18 @@ double temperature){
 
 //Funcion (mutacion direccionada por temperatura)
 // variables de tunning: max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate
-pair<string, double> cooling_system_plus(const vector<string>& dataset,string current_solution,double best_quality,  int threshold,int max_error, double temperature_pert,double temperature_leap , double cooling_rate, double heat_rate, int iteraciones_max, unordered_map<string, int> substring_to_index,unordered_map<int, string> index_to_substring) {
-    string best_solution = current_solution;
+pair<string, double> cooling_system_plus(const vector<string>& dataset,string best_solution,
+double best_quality,  int threshold,int max_error, double temperature_pert,double temperature_leap , 
+double cooling_rate, double heat_rate, int iteraciones_max, unordered_map<string, int> substring_to_index,
+unordered_map<int, string> index_to_substring) {
+
     int dataset_size= dataset.size();
     int best_solution_size = best_solution.size();
     double temperature_pert_max=1000;
     double temperature_leap_max=1000;
 
 
-    // Simulated Annealing loop
+    // Simulated Annealing loop variables
     int part_size;
     int random_position;
     string sub_solution;
@@ -120,23 +123,25 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,string cu
         part_size = size_calculator(temperature_pert/temperature_pert_max, best_solution_size); // Ensure part_size is a multiple of 3
         random_position = rand() % (best_solution_size - part_size + 1);
         // Replace the parts with new random substrings
+
+
         // Extract the substring
-        sub_solution = current_solution.substr(random_position, part_size);
+        sub_solution = best_solution.substr(random_position, part_size);
 
         // Generate neighbor solutions for the substring
-        neighbor_solutions = generateNeighborSolution_plus(sub_solution, substring_to_index, index_to_substring, temperature_pert/temperature_pert_max);
+        neighbor_solutions = generateNeighborSolution_plus(sub_solution, substring_to_index, 
+        index_to_substring, temperature_pert/temperature_pert_max);
 
         for (const string& neighbor_solution : neighbor_solutions) {
             // Replace the original substring with the neighbor solution
-            new_solution = current_solution;
+            new_solution = best_solution;
             new_solution.replace(random_position, part_size, neighbor_solution);
 
             double neighbor_quality = calidad_solucion(dataset, threshold, new_solution);
             if (neighbor_quality > best_quality) {
-                int aux_best = trunc(best_quality);
                 best_solution = new_solution;
                 best_quality = neighbor_quality;
-                current_solution = new_solution;
+                best_solution = new_solution;
                 iterations_without_improvement=0; //reset si se mejoro
             }else {
                 iterations_without_improvement++;  // Aumentar si no hay mejora
@@ -157,10 +162,9 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,string cu
                 // Generate neighbor solutions for the substring
                 solution_random = generateNeighborSolutionRandom(part_size, index_to_substring);
 
-                new_solution = current_solution;
+                new_solution = best_solution;
                 new_solution.replace(random_position, part_size, solution_random);
                 neighbor_solution_quality_in = calidad_solucion(dataset, threshold, new_solution);
-                current_solution = new_solution;
         
                 if (accept_rate_plus(best_quality, neighbor_solution_quality_in, temperature_leap/temperature_leap_max, dataset_size)) {
                     //cout<<".";//ayuda visual de probabilidad
@@ -171,9 +175,6 @@ pair<string, double> cooling_system_plus(const vector<string>& dataset,string cu
 
             }
         }
-
-        cooling_rate = cooling_rate;
-        //printf("%f\n", temperature);
         iteracion_actual++;
     }
     return make_pair(best_solution, best_quality);
@@ -240,10 +241,7 @@ string crossover_using_cplex(const vector<string>& parents, int threshold, const
 
 //test
 string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset){
-    string parent1 = parents[0];
-    string parent2 = parents[1];
-    string child_solution = parent1.substr(0, parent1.size() / 2) + parent2.substr(parent2.size() / 2);
-    return child_solution;
+    return parents[0];
 }
 
 //Poblaciones restringidas

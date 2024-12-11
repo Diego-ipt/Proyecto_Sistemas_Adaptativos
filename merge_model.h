@@ -21,6 +21,13 @@ struct Individual {
     double fitness;
 };
 
+void error_long_str(int long_cadenas, int long_solution){
+    if (long_cadenas != long_solution){
+        cout << "Error: la longitud de las cadenas del dataset no coincide con la longitud de la solucion" << endl;
+        exit(1);
+    }
+}
+
 // Función para generar la población inicial usando DecoderATCG
 /*
 vector<Individual> initializePopulation(int N_evolves, int population_size,int population_size_return, int seleccion, const vector<string>& dataset, double threshold) {
@@ -59,7 +66,16 @@ vector<Individual> initializePopulation(int N_evolves, int population_size,int p
 }
 */
 
-
+// Función para generar la población inicial
+vector<Individual> init_population(int population_size, int size_individual, double threshold, const vector<string>& dataset, unordered_map<int, string> index_to_substring) {
+    vector<Individual> population;
+    for (int i = 0; i < population_size; ++i) {
+        string solution = generateNeighborSolutionRandom(size_individual, index_to_substring);
+        error_long_str(dataset[0].size(), solution.size());
+        population.push_back({solution, calidad_solucion(dataset, threshold, solution)});
+    }
+    return population;
+}
 // Función para realizar el cruce usando crossover_using_cplex
 Individual crossover(const vector<string>& parents, int threshold, const vector<string>& dataset) {
     string child_solution = crossover_using_cplex(parents, threshold, dataset);
@@ -68,12 +84,24 @@ Individual crossover(const vector<string>& parents, int threshold, const vector<
 }
 
 // Función para realizar la mutación usando cooling_system_plus
+
 Individual mutate(const Individual& individual, const vector<string>& dataset, int threshold
-, int max_error, double temperature_pert, double temperature_leap, double cooling_rate, double heat_rate,
-int iteraciones_max, unordered_map<string, int> substring_to_index,unordered_map<int, string> index_to_substring) {
-    auto result = cooling_system_plus(dataset, individual.solution, individual.fitness, threshold, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, iteraciones_max, substring_to_index, index_to_substring);
+, int max_error, double temperature_pert, double temperature_leap, 
+double cooling_rate, double heat_rate,int iteraciones_max, 
+unordered_map<string, int> substring_to_index,unordered_map<int, string> index_to_substring) {
+    auto result = cooling_system_plus(dataset, individual.solution, individual.fitness, threshold, 
+    max_error, temperature_pert, temperature_leap, 
+    cooling_rate, heat_rate, iteraciones_max, substring_to_index, index_to_substring);
     return {result.first, result.second};
 }
+
+//test
+// Individual mutate(const Individual& individual, const vector<string>& dataset, int threshold
+// , int max_error, double temperature_pert, double temperature_leap, 
+// double cooling_rate, double heat_rate,int iteraciones_max, 
+// unordered_map<string, int> substring_to_index,unordered_map<int, string> index_to_substring){
+//     return individual;
+// }
 
 // Función principal del algoritmo genético
 /*
@@ -151,29 +179,46 @@ double heat_rate, bool tuningMode, int iteraciones_max) {
 }
 */
 
-void geneticAlgorithm_merge(int population_size, 
-int random_population_size, double pm, int elite_count, 
+void print_population(const vector<Individual>& population) {
+    // cout << "Population size: " << population.size()<< endl;
+    // if (!population.empty()) {
+    //     cout << "Length of individuals: " << population[0].solution.size() << " characters" << endl;
+    // }
+    // for (const Individual& individual : population) {
+    //     cout << "Solution: " << individual.solution << ", Fitness: " << individual.fitness << endl;
+    // }
+}
+
+
+void geneticAlgorithm_merge(int population_size, double pm, int elite_count, 
 const vector<string>& dataset, double threshold, 
 int max_time_genetic, int max_error, double temperature_pert, 
 double temperature_leap, double cooling_rate, 
 double heat_rate, bool tuningMode, int iteraciones_max, int N_parents) {
-    // Inicializar la población
-    vector<Individual> population;
+
+
+    //dataset
+    int dataset_size = dataset.size(); 
+    int long_cadenas = dataset[0].size();
+   
+    // Crear los mapas para las subcadenas
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
     generateSubstrings(substring_to_index, index_to_substring);
 
-    for (int i = 0; i < population_size; ++i) {
-        string solution = generateNeighborSolutionRandom(dataset[0].size(), index_to_substring);
-        double fitness = calidad_solucion(dataset, threshold, solution);
-        population.push_back({solution, fitness});
-    }
+    // Imprimir el tamaño del dataset
+   cout << "dataset size: " << dataset_size << ", " << long_cadenas << endl;
+
+    // Inicializar la población
+    vector<Individual> population = init_population(population_size, long_cadenas, threshold, dataset, index_to_substring);
 
     auto start_time = chrono::steady_clock::now();
     int generations = 0;
 
     while (chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_time).count() < max_time_genetic) {
         vector<Individual> new_population;
+        vector<Individual> population_copy = population;
+        print_population(population);
         
         // Selección y cruce
         for (int i = 0; i < population_size / N_parents; ++i) {
@@ -182,29 +227,16 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents) {
             for (int j = 0; j < N_parents; ++j) {
                 int parent_index = rand() % population.size();
                 parents.push_back(population[parent_index].solution);
-                population.erase(population.begin() + parent_index);
+                population_copy.erase(population_copy.begin() + parent_index);
             }
 
             // Crear un hijo a partir de N_parents
             Individual child = crossover(parents, threshold, dataset);
+            error_long_str(dataset[0].size(), child.solution.size());
             new_population.push_back(child);
         }
+        print_population(new_population);
 
-        // Mutación
-        for (Individual& individual : new_population) {
-            if(rand() % 100 < pm * 100){
-            individual = mutate(individual, dataset, threshold, max_error, 
-            temperature_pert, temperature_leap, cooling_rate, heat_rate,
-             iteraciones_max, substring_to_index, index_to_substring);
-            }
-        }
-
-        // Agregar parte de la población usando generateNeighborSolutionRandom
-        for (int i = 0; i < random_population_size; ++i) {
-            string solution = generateNeighborSolutionRandom(dataset[0].size(), index_to_substring);
-            double fitness = calidad_solucion(dataset, threshold, solution);
-            new_population.push_back({solution, fitness});
-        }
 
         // Ordenar la población por fitness
         sort(population.begin(), population.end(), [](const Individual& a, const Individual& b) {
@@ -212,12 +244,36 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents) {
         });
 
         // Imprimir el mejor individuo de la generación actual
-        cout << "Generation " << generations << ": Best fitness = " << population[0].fitness << endl;
+        auto current_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_time).count();
+        cout << "Generation " << generations << ": Best fitness = " << population[0].fitness << " in time: " << current_time << " seconds" << endl;
+
 
         // Agregar los N individuos con mejor calidad a la nueva población
         for (int i = 0; i < elite_count; ++i) {
             new_population.push_back(population[i]);
         }
+
+        // Completa la población con soluciones aleatorias
+        while (new_population.size() < population_size) {
+            string solution = generateNeighborSolutionRandom(dataset[0].size(), index_to_substring);
+            error_long_str(dataset[0].size(), solution.size());
+            double fitness = calidad_solucion(dataset, threshold, solution);
+            new_population.push_back({solution, fitness});
+        }
+        print_population(new_population);
+
+        // Mutación
+        for (Individual& individual : new_population) {
+            if(rand() % 100 < pm * 100){
+                individual = mutate(individual, dataset, threshold, max_error, 
+                temperature_pert, temperature_leap, cooling_rate, heat_rate,
+                iteraciones_max, substring_to_index, index_to_substring);
+                error_long_str(dataset[0].size(), individual.solution.size());
+            }
+            error_long_str(dataset[0].size(), individual.solution.size());
+        }
+        print_population(new_population);
+
 
         // Reemplazo de la población
         population = new_population;

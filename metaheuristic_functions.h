@@ -95,7 +95,12 @@ int size_calculator(double temperature_porcentual, double solution_size){
 string generateNeighborSolutionRandom(int size, unordered_map<int, string> index_to_substring){
     string neighbor_solutions;
     for (int j = 0; j < size; j+=3) {
-        neighbor_solutions+=getSubstringByPosition(index_to_substring, rand() % 64);
+        neighbor_solutions += getSubstringByPosition(index_to_substring, rand() % 64);
+    }
+    // Rellenar los lugares restantes con A, T, C, G al azar si sobran size
+    static const char nucleotides[] = {'A', 'T', 'C', 'G'};
+    while (neighbor_solutions.size() < size) {
+        neighbor_solutions += nucleotides[rand() % 4];
     }
     return neighbor_solutions;
 }

@@ -166,10 +166,12 @@ double calidad_solucion(const vector<string>& dataset, int threshold, string sol
     double data_size = dataset.size();
     for(const auto& str : dataset){
         int total_distance = 0;
-        for (int i = 0; i < size; i += 3) {
-            string substring_solution = solution_string.substr(i, 3);
-            string substring_str_dataset = str.substr(i, 3);
-            total_distance += hammingDistance(substring_solution, substring_str_dataset);
+        for (int i = 0; i < size; ++i) {
+            char char_solution = solution_string[i];
+            char char_str_dataset = str[i];
+            if (char_solution != char_str_dataset) {
+            total_distance++;
+            }
         }
         if (total_distance >= threshold){
             suma_filas++;//parte real de la calidad
