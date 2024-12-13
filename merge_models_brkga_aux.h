@@ -17,6 +17,7 @@
 #include "brkgaAPI/BRKGA.h"
 #include "brkgaAPI/MTRand.h"
 using namespace std;
+/*
 
 // Función para generar la población inicial usando DecoderATCG
 vector<Individual> initializePopulation(int N_evolves, int population_size,int population_size_return, int seleccion, const vector<string>& dataset, double threshold) {
@@ -182,5 +183,5 @@ private:
         return solucion;
     }
 };
-
+*/
 #endif
