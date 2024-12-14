@@ -35,6 +35,7 @@ vector<Individual> init_population(int population_size, int size_individual, dou
 Individual crossover(const vector<string>& parents, int threshold, const vector<string>& dataset) {
     string child_solution = crossover_using_cplex(parents, threshold, dataset);
     double child_fitness = calidad_solucion(dataset, threshold, child_solution);
+    cout << "calidad offspring: " << child_fitness << endl;
     return {child_solution, child_fitness};
 }
 
@@ -86,6 +87,7 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents) {
                 int parent_index = rand() % population.size();
                 parents.push_back(population[parent_index].solution);
                 population_copy.erase(population_copy.begin() + parent_index);
+                cout << "calidad padre " << j << ": " << calidad_solucion(dataset, threshold, population[parent_index].solution) << endl;
             }
 
             // Crear un hijo a partir de N_parents

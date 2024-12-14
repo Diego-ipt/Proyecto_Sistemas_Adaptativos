@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include "metaheuristic_functions.h"
 #include <vector>
-//#include "ilcplex/ilocplex.h"
+#include "ilcplex/ilocplex.h"
 
 using namespace std;
 
@@ -194,12 +194,19 @@ unordered_map<int, string> index_to_substring) {
 }
 
 //Funcion de cruzamiento usando CPLEX
-/*
-string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset) {
+
+/* string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset) {
     IloEnv env;
     try {
         IloModel model(env);
         IloCplex cplex(model);
+
+        double best_p = calidad_solucion(dataset,threshold,parents[0]);
+        for(int i = 0; i < parents.size(); i++) {
+            if(calidad_solucion(dataset,threshold,parents[i]) > best_p) {
+                best_p = calidad_solucion(dataset,threshold,parents[i]);
+            }
+        }
 
         int n = parents[0].size();
         int num_parents = parents.size();
@@ -227,20 +234,28 @@ string crossover_using_cplex(const vector<string>& parents, int threshold, const
             model.add(sum == 1);
         }
 
+        cout << int(best_p) << endl;
+
+        model.add(objective > int(best_p));
+
         // Solve the model
         cplex.solve();
 
         // Construct the child solution
         string child_solution;
         for (int i = 0; i < n; ++i) {
+            double max_value = -1;
+            int best_parent_index = -1;
             for (int j = 0; j < num_parents; ++j) {
-                if (cplex.getValue(x[i][j]) > 0.5) {
-                    child_solution += parents[j][i];
-                    break;
+                double value = cplex.getValue(x[i][j]);
+                if (value > max_value) {
+                    max_value = value;
+                    best_parent_index = j;
                 }
             }
+            // Use the best parent for this position
+            child_solution += parents[best_parent_index][i];
         }
-
         return child_solution;
     } catch (IloException& e) {
         cerr << "Concert exception caught: " << e << endl;
@@ -249,14 +264,14 @@ string crossover_using_cplex(const vector<string>& parents, int threshold, const
     }
     env.end();
     return "";
-}
-*/
+} */
+
 
 //test
-string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset){
+/* string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset){
     return parents[0];
 }
-
+ */
 
 #endif
 
