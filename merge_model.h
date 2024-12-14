@@ -12,6 +12,7 @@
 #include <chrono>
 #include <unordered_map>
 #include "merge_models_aux.h"
+#include "cruce_cplex.h"
 
 using namespace std;
 
@@ -33,7 +34,8 @@ vector<Individual> init_population(int population_size, int size_individual, dou
 }
 // Función para realizar el cruce usando crossover_using_cplex
 Individual crossover(const vector<string>& parents, int threshold, const vector<string>& dataset) {
-    string child_solution = crossover_using_cplex(parents, threshold, dataset);
+    int num_particion = 150;
+    string child_solution = crossover_subdivision(parents, dataset, num_particion);
     double child_fitness = calidad_solucion(dataset, threshold, child_solution);
     cout << "calidad offspring: " << child_fitness << endl;
     return {child_solution, child_fitness};

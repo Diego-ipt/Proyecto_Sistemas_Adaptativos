@@ -1,6 +1,6 @@
 #ifndef CRUCE_CPLEX_H
 #define CRUCE_CPLEX_H
-#include <ilcplex/ilocplex.h>
+//#include <ilcplex/ilocplex.h>
 #include <vector>
 #include <map>
 #include <string>
@@ -25,7 +25,7 @@ int calidad_particion(const vector<string>& dataset, const string& substring, in
             char char_solution = substring[i];
             char char_str_dataset = str[i+position_start];
             if (char_solution != char_str_dataset) {
-            total_distance++;
+                total_distance++;
             }
         }
         if (total_distance >= size-1){
@@ -44,7 +44,7 @@ int calidad_particion(const vector<string>& dataset, const string& substring, in
     return calidad;
 }
 // Función para resolver con CPLEX
-std::string crossover_using_cplex(const std::vector<std::string>& padres, const std::vector<std::string>& dataset, int threshold) {
+/* std::string crossover_using_cplex(const std::vector<std::string>& padres, const std::vector<std::string>& dataset, int threshold) {
     size_t longitud = padres[0].size();
     size_t num_padres = padres.size();
 
@@ -109,4 +109,60 @@ std::string crossover_using_cplex(const std::vector<std::string>& padres, const 
     }
     env.end();
 }
+ */
+
+
+string crossover_subdivision(const vector<string>& padres, const vector<string>& dataset, int num_particiones) {
+    string solucion_final = "";
+
+    // Calcular el tamaño de cada partición
+    int tam_substring = padres[0].size() / num_particiones;
+    int resto = padres[0].size() % num_particiones;
+
+    for (int particion = 0; particion < num_particiones; ++particion) {
+        string mejor_subdivision;
+        int mejor_calidad = -1;
+
+        int pos_inicio = particion * tam_substring;
+
+        // Evaluar cada padre para esta partición
+        for (const auto& padre : padres) {
+            string subdivision = padre.substr(pos_inicio, tam_substring);
+
+            // Evaluar calidad de la partición actual
+            int calidad = calidad_particion(dataset, subdivision, pos_inicio);
+
+            // Actualizar la mejor subdivisión si la calidad es superior
+            if (calidad > mejor_calidad) {
+                mejor_calidad = calidad;
+                mejor_subdivision = subdivision;
+            }
+        }
+
+        // Agregar la mejor subdivisión a la solución final
+        solucion_final += mejor_subdivision;
+    }
+
+    if (resto > 0) {
+        string mejor_subdivision;
+        int mejor_calidad = -1;
+        int pos_inicio = num_particiones * tam_substring;
+
+        for (const auto& padre : padres) {
+            string substring = padre.substr(pos_inicio, resto);
+
+            int calidad = calidad_particion(dataset, substring, pos_inicio);
+
+            if (calidad > mejor_calidad) {
+                mejor_calidad = calidad;
+                mejor_subdivision = substring;
+            }
+        }
+
+        solucion_final += mejor_subdivision;
+    }
+
+    return solucion_final;
+}
+
 #endif
