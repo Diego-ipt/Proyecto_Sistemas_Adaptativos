@@ -33,11 +33,10 @@ vector<Individual> init_population(int population_size, int size_individual, dou
     return population;
 }
 // Función para realizar el cruce usando crossover_using_cplex
-Individual crossover(const vector<string>& parents, int threshold, const vector<string>& dataset) {
-    int num_particion = 150;
+Individual crossover(const vector<string>& parents, int threshold, const vector<string>& dataset, int num_particion) {
     string child_solution = crossover_subdivision(parents, dataset, num_particion);
     double child_fitness = calidad_solucion(dataset, threshold, child_solution);
-    cout << "calidad offspring: " << child_fitness << endl;
+    //cout << "calidad offspring: " << child_fitness << endl;
     return {child_solution, child_fitness};
 }
 
@@ -56,7 +55,7 @@ void geneticAlgorithm_merge(int population_size, double pm, int elite_count,
 const vector<string>& dataset, double threshold, 
 int max_time_genetic, int max_error, double temperature_pert, 
 double temperature_leap, double cooling_rate, 
-double heat_rate, bool tuningMode, int iteraciones_max, int N_parents) {
+double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_particiones) {
 
 
     //dataset
@@ -89,11 +88,11 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents) {
                 int parent_index = rand() % population.size();
                 parents.push_back(population[parent_index].solution);
                 population_copy.erase(population_copy.begin() + parent_index);
-                cout << "calidad padre " << j << ": " << calidad_solucion(dataset, threshold, population[parent_index].solution) << endl;
+                //cout << "calidad padre " << j << ": " << calidad_solucion(dataset, threshold, population[parent_index].solution) << endl;
             }
 
             // Crear un hijo a partir de N_parents
-            Individual child = crossover(parents, threshold, dataset);
+            Individual child = crossover(parents, threshold, dataset, num_particiones);
             new_population.push_back(child);
         }
 

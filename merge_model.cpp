@@ -22,6 +22,7 @@ int main(int argc, char* argv[]) {
     bool tuningMode = false;
     int iteraciones_max = 300;
     int N_parents = 2; // Default value for N_parents
+    int n_particiones = 150;
 
     // Verify that the minimum required arguments are provided
     if (argc < 9) {
@@ -60,6 +61,7 @@ int main(int argc, char* argv[]) {
     if (args.find("-tuning") != args.end()) tuningMode = (args["-tuning"] == "true");
     if (args.find("-iter_max") != args.end()) iteraciones_max = stoi(args["-iter_max"]);
     if (args.find("-N_parents") != args.end()) N_parents = stoi(args["-N_parents"]);
+    if (args.find("-n_part") != args.end()) n_particiones = stoi(args["-n_part"]);
 
     // Adjust threshold based on M
     threshold *= M;
@@ -70,7 +72,7 @@ int main(int argc, char* argv[]) {
     // Run the genetic algorithm
     geneticAlgorithm_merge(population_size, pm, 
     elite_count, dataset, threshold, max_time_genetic, max_error, temperature_pert, 
-    temperature_leap, cooling_rate, heat_rate, tuningMode, iteraciones_max, N_parents);
+    temperature_leap, cooling_rate, heat_rate, tuningMode, iteraciones_max, N_parents, n_particiones);
 
     return 0;
 }
