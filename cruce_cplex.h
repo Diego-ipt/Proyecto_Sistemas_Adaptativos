@@ -8,125 +8,105 @@
 #include <iostream>
 #include <algorithm>
 
-// Define el componente solución como una asignación letra-posición
-struct Component {
-    int position;
-    char letter;
-};
-
-using Solution = std::vector<Component>;
-
-// Genera soluciones iniciales a partir de padres
-Solution probabilisticSolutionConstruction(const std::vector<std::string>& parents, int length, double randomnessRate) {
-    Solution child;
-    std::map<char, int> letterFrequency;
-    
-    for (int j = 0; j < length; ++j) {
-        letterFrequency.clear();
-        for (const auto& parent : parents) {
-            letterFrequency[parent[j]]++;
+using namespace std;
+//calidad particionada
+//esta funcion debe usar substring de tamano minimo de 2, aunque se recomiendan tamanos grandes
+int calidad_particion(const vector<string>& dataset, const string& substring, int position_start) {
+    double suma_filas_reject=0;
+    // Evaluar la calidad de la solución
+    double size = substring.size();
+    double suma_filas;
+    double calidad = 0;
+    double cantidad_reject = 0;
+    double data_size = dataset.size();
+    for(const auto& str : dataset){
+        int total_distance = 0;
+        for (int i = 0; i < size; ++i) {
+            char char_solution = substring[i];
+            char char_str_dataset = str[i+position_start];
+            if (char_solution != char_str_dataset) {
+            total_distance++;
+            }
         }
-
-        // Selección probabilística
-        double randValue = static_cast<double>(rand()) / RAND_MAX;
-        char selectedLetter;
-
-        if (randValue <= randomnessRate) {
-            // Selección determinística
-            selectedLetter = std::max_element(letterFrequency.begin(), letterFrequency.end(),
-                                              [](const auto& a, const auto& b) {
-                                                  return a.second < b.second;
-                                              })->first;
+        if (total_distance >= size-1){
+            suma_filas++;//parte real de la calidad
         } else {
-            // Selección probabilística por frecuencia
-            int total = 0;
-            for (const auto& [letter, freq] : letterFrequency) {
-                total += freq;
-            }
-            
-            double threshold = static_cast<double>(rand()) / RAND_MAX * total;
-            total = 0;
-            for (const auto& [letter, freq] : letterFrequency) {
-                total += freq;
-                if (total >= threshold) {
-                    selectedLetter = letter;
-                    break;
-                }
-            }
+            cantidad_reject++;
+            suma_filas_reject += total_distance/size;
         }
-
-        child.push_back({j, selectedLetter});
     }
-    return child;
-}
+    if(cantidad_reject==0){
+        cantidad_reject=1;
+    }
+    double porcentaje_hamilton_reject = suma_filas_reject/cantidad_reject;
+    calidad = suma_filas+porcentaje_hamilton_reject;
 
-// Resuelve la subinstancia con CPLEX
-Solution solveSubInstance(const std::vector<Component>& subInstance, int length, int timeLimit) {
+    return calidad;
+}
+// Función para resolver con CPLEX
+std::string crossover_using_cplex(const std::vector<std::string>& padres, const std::vector<std::string>& dataset, int threshold) {
+    size_t longitud = padres[0].size();
+    size_t num_padres = padres.size();
+
     IloEnv env;
-    Solution optimalSolution;
     try {
         IloModel model(env);
-        IloArray<IloBoolVarArray> x(env, length);
-        for (int i = 0; i < length; ++i) {
-            x[i] = IloBoolVarArray(env, 4); // Para A, C, T, G
+        IloArray<IloNumVarArray> x(env, longitud); // Variables binarias para elegir letras
+
+        // Crear variables
+        for (size_t i = 0; i < longitud; ++i) {
+            x[i] = IloNumVarArray(env, num_padres, 0, 1, ILOBOOL);
         }
 
-        // Restricciones de subinstancia
-        for (const auto& comp : subInstance) {
-            int letterIndex = comp.letter - 'A'; // Asumiendo letras como A, C, T, G
-            model.add(x[comp.position][letterIndex] == 1);
+        // Restricción: Cada posición debe tener exactamente una letra elegida
+        for (size_t i = 0; i < longitud; ++i) {
+            IloExpr sum(env);
+            for (size_t j = 0; j < num_padres; ++j) {
+                sum += x[i][j];
+            }
+            model.add(sum == 1);
+            sum.end();
         }
 
-        // Función objetivo (ejemplo: maximizar distancia de Hamming)
-        IloExpr obj(env);
-        for (int i = 0; i < length; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                obj += x[i][j];
+        // Función objetivo: Maximizar la calidad del hijo
+        IloExpr objective(env);
+        int size_substring = 8;
+        for (size_t i = 0; i < longitud; i += size_substring) {
+            for (size_t j = 0; j < num_padres; ++j) {
+                std::string substring = padres[j].substr(i, size_substring);
+                objective += calidad_particion(dataset, substring, i) * x[i][j];
             }
         }
-        model.add(IloMaximize(env, obj));
+        model.add(IloMaximize(env, objective));
+        objective.end();
 
+        // Resolver el modelo
         IloCplex cplex(model);
-        cplex.setParam(IloCplex::TiLim, timeLimit);
+        cplex.solve();
 
-        if (cplex.solve()) {
-            for (int i = 0; i < length; ++i) {
-                for (int j = 0; j < 4; ++j) {
-                    if (cplex.getValue(x[i][j]) > 0.5) {
-                        optimalSolution.push_back({i, static_cast<char>('A' + j)});
-                        break;
-                    }
-                }
+        // Construir la solución
+        std::string hijo(longitud, ' ');
+        for (size_t i = 0; i < longitud; ++i) {
+            double max_value = -1.0;
+            size_t best_j = 0;
+            for (size_t j = 0; j < num_padres; ++j) {
+            double value = cplex.getValue(x[i][j]);
+            if (value > max_value) {
+                max_value = value;
+                best_j = j;
             }
+            }
+            hijo[i] = padres[best_j][i];
         }
-        obj.end();
-    } catch (const IloException& e) {
-        std::cerr << "CPLEX Exception: " << e.getMessage() << std::endl;
+
+        return hijo;
+    } catch (IloException& e) {
+        std::cerr << "Error de CPLEX: " << e.getMessage() << std::endl;
+        return "";
+    } catch (...) {
+        std::cerr << "Error desconocido." << std::endl;
+        return "";
     }
     env.end();
-    return optimalSolution;
-}
-
-// Función principal para realizar crossover usando CPLEX
-std::vector<std::string> crossover_using_cplex(const std::vector<std::string>& parents, int threshold, const std::vector<std::string>& dataset) {
-    int length = parents[0].size();
-    double randomnessRate = 0.5;
-    int timeLimit = 10;
-
-    // Generar soluciones iniciales
-    Solution child = probabilisticSolutionConstruction(parents, length, randomnessRate);
-
-    // Resolver subinstancia con CPLEX
-    Solution result = solveSubInstance(child, length, timeLimit);
-
-    // Convertir la solución óptima en cadenas de salida
-    std::vector<std::string> offspring(dataset.size(), std::string(length, ' '));
-    for (const auto& comp : result) {
-        for (auto& offspringStr : offspring) {
-            offspringStr[comp.position] = comp.letter;
-        }
-    }
-
-    return offspring;
 }
 #endif

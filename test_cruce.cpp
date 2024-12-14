@@ -8,27 +8,38 @@
 
 using namespace std;
 int main() {
-    std::vector<std::string> parents = {"ACGT", "TGCA"};
-    std::vector<std::string> dataset = {"AAAA", "CCCC", "GGGG", "TTTT"};
+    // Padres iniciales
+    vector<string> padres = {"TGGCA", "CGTAG", "TTGGC"};
+
+    // Dataset ejemplo
+    vector<string> dataset = {
+            "TGGCA", "CGTAT", "TTGGC", "TGACT", "GCTAG", "TACGT", "GATCA", "CTGAT",
+            "ATGCG", "CGTGA", "TGCAT", "GACTG", "CTAGT", "GTCAG", "TAGCT", "GATCG",
+            "CTGAC", "ATCGT", "GCTGA", "TACGA", "GATCT", "CTGTA", "ATGCT", "CGTAG",
+            "TGCGA", "GACTA", "CTAGC", "GTCGA", "TAGCA", "GATGC", "CTGCA", "ATGTA",
+            "CGTAC", "TGCAA", "GACTC", "CTAGA", "GTCAT", "TAGCG", "GATGA", "CTGGA",
+            "ATGAA", "CGTCA", "TGCTA", "GACTG", "CTAGT", "GTCAG", "TAGCT", "GATCG",
+        };
+
+    // Umbral
     int threshold = 3;
 
+    try {
+        // Resolver con CPLEX
+        string hijo = crossover_using_cplex(padres, dataset, threshold);
+        // Imprimir la calidad de los padres
+        for (const auto& padre : padres) {
+            int calidad_padre = calidad_solucion(dataset, threshold, padre);
+            cout << "Calidad del padre " << padre << ": " << calidad_padre << endl;
+        }
 
-
-    std::vector<std::string> offspring = crossover_using_cplex(parents, threshold, dataset);
-
-    vector<double> parent_quality;
-    for (size_t i = 0; i < parents.size(); ++i) {
-        vector<double> parent_quality;
-        parent_quality[i] = calidad_solucion(dataset, threshold, parents[i]);
+        // Imprimir la calidad del hijo
+        int calidad_hijo = calidad_solucion(dataset, threshold, hijo);
+        cout << "Calidad del hijo " << hijo << ": " << calidad_hijo << endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+        return 1;
     }
-    vector<double> offspring_quality;
-    for (size_t i = 0; i < offspring.size(); ++i) {
-        vector<double> offspring_quality;
-        offspring_quality[i] = calidad_solucion(dataset, threshold, offspring[i]);
-    }
-
-    bool offspring_better = *max_element(offspring_quality.begin(), offspring_quality.end()) > *max_element(parent_quality.begin(), parent_quality.end());
-    cout << (offspring_better ? "True" : "False") << " si los hijos tienen mayor calidad que el mejor de los padres" << endl;
 
     return 0;
 }
