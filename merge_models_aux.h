@@ -12,29 +12,10 @@
 #include <chrono>
 #include <unordered_map>
 #include "metaheuristic_functions.h"
+#include "cruce_cplex.h"
 #include <vector>
-#include "ilcplex/ilocplex.h"
 
 using namespace std;
-
-//calidad particionada
-int calidad_particion(const vector<string>& dataset, const string& substring, int position_start) {
-    int total_differences = 0;
-    int substring_length = substring.size();
-
-    for (const auto& str : dataset) {
-        if (position_start + substring_length <= str.size()) {
-            string substring_dataset = str.substr(position_start, substring_length);
-            for (int i = 0; i < substring_length; ++i) {
-                if (substring[i] != substring_dataset[i]) {
-                    ++total_differences;
-                }
-            }
-        }
-    }
-
-    return total_differences;
-}
 
 //Funcion para aceptar o rechazar una solucion en el simulated annealing
 bool accept_rate_plus(double best_quality, double neighbor_quality, double temperature_porcentual, int dataset_size) { 
@@ -192,86 +173,6 @@ unordered_map<int, string> index_to_substring) {
     }
     return make_pair(best_solution, best_quality);
 }
-
-//Funcion de cruzamiento usando CPLEX
-
-/* string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset) {
-    IloEnv env;
-    try {
-        IloModel model(env);
-        IloCplex cplex(model);
-
-        double best_p = calidad_solucion(dataset,threshold,parents[0]);
-        for(int i = 0; i < parents.size(); i++) {
-            if(calidad_solucion(dataset,threshold,parents[i]) > best_p) {
-                best_p = calidad_solucion(dataset,threshold,parents[i]);
-            }
-        }
-
-        int n = parents[0].size();
-        int num_parents = parents.size();
-        IloArray<IloBoolVarArray> x(env, n);
-        for (int i = 0; i < n; ++i) {
-            x[i] = IloBoolVarArray(env, num_parents);
-        }
-
-        // Objective function: maximize the quality of the solution
-        IloExpr objective(env);
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < num_parents; ++j) {
-                objective += x[i][j] * calidad_particion(dataset, parents[j], i);
-            }
-        }
-        
-        model.add(IloMaximize(env, objective));
-
-        // Constraints: each position in the child must be taken from one of the parents
-        for (int i = 0; i < n; ++i) {
-            IloExpr sum(env);
-            for (int j = 0; j < num_parents; ++j) {
-                sum += x[i][j];
-            }
-            model.add(sum == 1);
-        }
-
-        cout << int(best_p) << endl;
-
-        model.add(objective > int(best_p));
-
-        // Solve the model
-        cplex.solve();
-
-        // Construct the child solution
-        string child_solution;
-        for (int i = 0; i < n; ++i) {
-            double max_value = -1;
-            int best_parent_index = -1;
-            for (int j = 0; j < num_parents; ++j) {
-                double value = cplex.getValue(x[i][j]);
-                if (value > max_value) {
-                    max_value = value;
-                    best_parent_index = j;
-                }
-            }
-            // Use the best parent for this position
-            child_solution += parents[best_parent_index][i];
-        }
-        return child_solution;
-    } catch (IloException& e) {
-        cerr << "Concert exception caught: " << e << endl;
-    } catch (...) {
-        cerr << "Unknown exception caught" << endl;
-    }
-    env.end();
-    return "";
-} */
-
-
-//test
-/* string crossover_using_cplex(const vector<string>& parents, int threshold, const vector<string>& dataset){
-    return parents[0];
-}
- */
 
 #endif
 
