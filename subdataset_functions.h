@@ -15,11 +15,14 @@
 #include "funciones_greedy.h"
 
 using namespace std;
+
+//guarda la solucion y su calidad
 struct solutionss{
     string solucion;
     double calidad;
 };
 
+//guarda el subdataset y sus soluciones
 struct Subdataset{
     vector<int> identificadores_subdatasets_contenidos;
     vector<string> dataset;
