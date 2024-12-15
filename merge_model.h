@@ -145,6 +145,5 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_p
     else{
         cout << -population[0].fitness<<endl;
     }
-    cout << "Best solution: " << population[0].solution << " with fitness = " << population[0].fitness << endl;
 }
 #endif
