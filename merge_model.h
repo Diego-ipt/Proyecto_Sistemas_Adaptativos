@@ -68,8 +68,9 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_p
     generateSubstrings(substring_to_index, index_to_substring);
 
     // Imprimir el tamaño del dataset
-   cout << "dataset size: " << dataset_size << ", " << long_cadenas << endl;
-
+    if(!tuningMode){
+        cout << "dataset size: " << dataset_size << ", " << long_cadenas << endl;
+    }
     // Inicializar la población
     vector<Individual> population = init_population(population_size, long_cadenas, threshold, dataset, index_to_substring);
 
@@ -104,9 +105,9 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_p
 
         // Imprimir el mejor individuo de la generación actual
         auto current_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_time).count();
-        cout << "Generation " << generations << ": Best fitness = " << population[0].fitness << " in time: " << current_time << " seconds" << endl;
-
-
+        if(!tuningMode){    
+            cout << "Generation " << generations << ": Best fitness = " << population[0].fitness << " in time: " << current_time << " seconds" << endl;
+        }
         // Agregar los N individuos con mejor calidad a la nueva población
         for (int i = 0; i < elite_count; ++i) {
             new_population.push_back(population[i]);
@@ -138,6 +139,12 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_p
     }
 
     // Imprimir la mejor solución encontrada
+    if(!tuningMode){
+        cout << "Best solution: " << population[0].solution << " with fitness = " << population[0].fitness << endl;
+    }
+    else{
+        cout << -population[0].fitness<<endl;
+    }
     cout << "Best solution: " << population[0].solution << " with fitness = " << population[0].fitness << endl;
 }
 #endif
