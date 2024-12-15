@@ -120,6 +120,12 @@ public:
 	void evolve(unsigned generations = 1);
 
 	/**
+	 * agrega individuos a la población
+	 * @param individuals vector de individuos a agregar
+	 */
+	void pushIndividuals(vector<string> individuals);
+
+	/**
 	 * Exchange elite-solutions between the populations
 	 * @param M number of elite chromosomes to select from each population
 	 */
@@ -248,6 +254,22 @@ void BRKGA< Decoder, MTRand >::evolve(unsigned generations) {
 		}
 	}
 }
+
+
+template< class Decoder, class MTRand >
+void BRKGA< Decoder, MTRand >::pushIndividuals(vector<string> individuals) {
+	for (const auto& individual : individuals) {
+		std::vector<double> chromosome(n);
+		for (unsigned i = 0; i < n; ++i) {
+			if (individual[i] == 'A') chromosome[i] = 0.0;
+			else if (individual[i] == 'G') chromosome[i] = 0.25;
+			else if (individual[i] == 'T') chromosome[i] = 0.5;
+			else if (individual[i] == 'C') chromosome[i] = 0.75;
+		}
+		current[0]->pushChromosome(chromosome, -refDecoder.decode(chromosome, threshold, dataset));
+	}
+}
+
 
 template< class Decoder, class MTRand >
 void BRKGA< Decoder, MTRand >::exchangeElite(unsigned M) {

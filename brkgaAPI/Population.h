@@ -84,6 +84,10 @@ public:
 		
 		return population[fitness[i].second];
 	}
+	void pushChromosome(const std::vector<double>& chromosome, double fitness) {
+		population.push_back(chromosome);
+		this->fitness.push_back(std::make_pair(fitness, population.size() - 1));
+	}
 
 private:
 	// Constructor por copia
