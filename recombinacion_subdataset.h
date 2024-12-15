@@ -70,17 +70,17 @@ unsigned X_INTVL, unsigned X_NUMBER, bool tuningMode){
 	}
 
 
-	int fitness_act=-1*algorithm.getBestFitness();
+	double fitness_act=-1*algorithm.getBestFitness();
     string best_chromosome = decoder.traduccion(algorithm.getBestChromosome());
 	unsigned generation = 0;		// current generation
     clock_t start_time = clock();
         int time = 0;
         
-        do {
+        while ((clock() - start_time) / CLOCKS_PER_SEC < time_max){
             algorithm.evolve();	// evolve the population for one generation
             
-            if(fitness_act < trunc(-1*algorithm.getBestFitness())) {
-                fitness_act = trunc(-1*algorithm.getBestFitness());
+            if(fitness_act < -1*algorithm.getBestFitness()) {
+                fitness_act = -1*algorithm.getBestFitness();
                 time = (clock() - start_time) / CLOCKS_PER_SEC;
                 //calidad y tiempo en que la encontró
                 if(!tuningMode) {cout << fitness_act << " " << time << endl;}
@@ -89,8 +89,7 @@ unsigned X_INTVL, unsigned X_NUMBER, bool tuningMode){
             if((++generation) % X_INTVL == 0) {
                 algorithm.exchangeElite(X_NUMBER);	// exchange top individuals
             }
-        } while ((clock() - start_time) / CLOCKS_PER_SEC < time_max);
-        
+        }
         best_chromosome = decoder.traduccion(algorithm.getBestChromosome());
         if(!tuningMode){
         cout << best_chromosome << endl;
@@ -100,8 +99,9 @@ unsigned X_INTVL, unsigned X_NUMBER, bool tuningMode){
         else{
             int irace_minmax = -fitness_act;
             cout << irace_minmax << endl;
-    }
-    return {best_chromosome, fitness_act};
+        }
+        solutionss best_solution = {best_chromosome, fitness_act};
+    return {best_solution};
 }
 
 
