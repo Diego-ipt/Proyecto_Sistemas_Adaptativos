@@ -24,13 +24,12 @@ struct solutionss{
 
 //guarda el subdataset y sus soluciones
 struct Subdataset{
-    vector<int> identificadores_subdatasets_contenidos;
+    //vector<int> identificadores_subdatasets_contenidos;
     vector<string> dataset;
-    vector<solutionss> soluciones;
+    //vector<solutionss> soluciones;
 };
 
 //sudividir el dataset en subdatasets
-//solo se puede usar al inicio, ya que no se acepatan soluciones
 vector<Subdataset> divide_subdataset(const vector<string>& dataset, int num_subdatasets){
     vector<Subdataset> subdatasets(num_subdatasets);
     int size = dataset.size();
@@ -44,9 +43,9 @@ vector<Subdataset> divide_subdataset(const vector<string>& dataset, int num_subd
         subdatasets[i].dataset = vector<string>(dataset.begin()+start, dataset.begin()+end);
     }
     // Assign an ID to each subdataset
-    for (int i = 0; i < num_subdatasets; i++) {
-        subdatasets[i].identificadores_subdatasets_contenidos.push_back(i);
-    }
+    // for (int i = 0; i < num_subdatasets; i++) {
+    //     subdatasets[i].identificadores_subdatasets_contenidos.push_back(i);
+    // }
     return subdatasets;
 }
 
@@ -58,7 +57,7 @@ vector<Subdataset> union_subdataset(const vector<Subdataset>& subdatasets){
     Subdataset subdataset_union;
     for(const Subdataset& subdataset : subdatasets){
         subdataset_union.dataset.insert(subdataset_union.dataset.end(), subdataset.dataset.begin(), subdataset.dataset.end());
-        subdataset_union.identificadores_subdatasets_contenidos.insert(subdataset_union.identificadores_subdatasets_contenidos.end(), subdataset.identificadores_subdatasets_contenidos.begin(), subdataset.identificadores_subdatasets_contenidos.end());
+        //subdataset_union.identificadores_subdatasets_contenidos.insert(subdataset_union.identificadores_subdatasets_contenidos.end(), subdataset.identificadores_subdatasets_contenidos.begin(), subdataset.identificadores_subdatasets_contenidos.end());
     }
     subdatasets_union.push_back(subdataset_union);
     return subdatasets_union;
@@ -102,7 +101,7 @@ unordered_map<int, string> index_to_substring){
 
 
         // Extract the substring
-        sub_solution = best_solution.substr(random_position, part_size);
+        sub_solution = current_solution.substr(random_position, part_size);
 
         // Generate neighbor solutions for the substring
         neighbor_solutions = generateNeighborSolution_plus(sub_solution, substring_to_index, 

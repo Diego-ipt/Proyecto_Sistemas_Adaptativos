@@ -123,7 +123,7 @@ public:
 	 * agrega individuos a la población
 	 * @param individuals vector de individuos a agregar
 	 */
-	void pushIndividuals(vector<string> individuals);
+	void pushIndividuals_AGTC(vector<string> individuals);
 
 	/**
 	 * Exchange elite-solutions between the populations
@@ -257,14 +257,14 @@ void BRKGA< Decoder, MTRand >::evolve(unsigned generations) {
 
 
 template< class Decoder, class MTRand >
-void BRKGA< Decoder, MTRand >::pushIndividuals(vector<string> individuals) {
+void BRKGA< Decoder, MTRand >::pushIndividuals_AGTC(vector<string> individuals) {
 	for (const auto& individual : individuals) {
 		std::vector<double> chromosome(n);
 		for (unsigned i = 0; i < n; ++i) {
-			if (individual[i] == 'A') chromosome[i] = 0.0;
-			else if (individual[i] == 'G') chromosome[i] = 0.25;
-			else if (individual[i] == 'T') chromosome[i] = 0.5;
-			else if (individual[i] == 'C') chromosome[i] = 0.75;
+			if (solution.solucion[i] == 'A') chromosome[i] = 0.125;
+			else if (solution.solucion[i] == 'G') chromosome[i] = 0.375;
+			else if (solution.solucion[i] == 'T') chromosome[i] = 0.625;
+			else if (solution.solucion[i] == 'C') chromosome[i] = 0.875;
 		}
 		current[0]->pushChromosome(chromosome, -refDecoder.decode(chromosome, threshold, dataset));
 	}

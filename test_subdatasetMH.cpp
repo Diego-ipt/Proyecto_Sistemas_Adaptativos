@@ -84,16 +84,10 @@ int main(int argc, char* argv[]) {
     if (args.find("-tuning") != args.end()) tuningMode = (args["-tuning"] == "true");
 
     
-    auto start = chrono::high_resolution_clock::now();
     int threshold_entero = threshold * dataset[0].size();
-    solutionss result = recombinacion_subdataset(dataset, num_subdatasets, threshold_entero, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, iteraciones_max, time_max, p, pe, pm, rhoe, X_INTVL, X_NUMBER, tuningMode);
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed = end - start;
+    recombinacion_subdataset(dataset, num_subdatasets, threshold_entero, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, iteraciones_max, time_max, p, pe, pm, rhoe, X_INTVL, X_NUMBER, tuningMode);
 
-    if(!tuningMode){
-        cout << "Best solution: " << result.solucion << endl;
-        cout << "Fitness: " << result.calidad << endl;
-        cout << "Elapsed time: " << elapsed.count() << " seconds" << endl;
-    }
+
+
     return 0;
 }
