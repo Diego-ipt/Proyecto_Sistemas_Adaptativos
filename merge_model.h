@@ -69,13 +69,16 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_p
 
     // Imprimir el tamaño del dataset
     if(!tuningMode){
-        cout << "dataset size: " << dataset_size << ", " << long_cadenas << endl;
+        //cout << "dataset size: " << dataset_size << ", " << long_cadenas << endl;
     }
     // Inicializar la población
     vector<Individual> population = init_population(population_size, long_cadenas, threshold, dataset, index_to_substring);
 
     auto start_time = chrono::steady_clock::now();
     int generations = 0;
+    int mejor = 0;
+    string mejor_solution = "";
+    int current_time;
 
     while (chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_time).count() < max_time_genetic) {
         vector<Individual> new_population;
@@ -104,9 +107,13 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_p
         });
 
         // Imprimir el mejor individuo de la generación actual
-        auto current_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_time).count();
-        if(!tuningMode){    
-            cout << "Generation " << generations << ": Best fitness = " << population[0].fitness << " in time: " << current_time << " seconds" << endl;
+        if(!tuningMode){
+            if(trunc(population[0].fitness) > mejor) {
+                mejor = trunc(population[0].fitness);
+                mejor_solution = population[0].solution;
+                current_time = chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start_time).count();
+                cout << mejor << " " << current_time << endl;
+            }    
         }
         // Agregar los N individuos con mejor calidad a la nueva población
         for (int i = 0; i < elite_count; ++i) {
@@ -140,10 +147,11 @@ double heat_rate, bool tuningMode, int iteraciones_max, int N_parents, int num_p
 
     // Imprimir la mejor solución encontrada
     if(!tuningMode){
-        cout << "Best solution: " << population[0].solution << " with fitness = " << population[0].fitness << endl;
+        cout << mejor_solution << endl;
+        cout << mejor << " " << current_time << endl;
     }
     else{
-        cout << -population[0].fitness<<endl;
+        cout << -mejor <<endl;
     }
 }
 #endif
