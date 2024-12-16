@@ -39,6 +39,8 @@ double temperature_pert,double temperature_leap ,
 double cooling_rate, double heat_rate, int iteraciones_max, 
 int time_max, unsigned p, double pe, double pm, double rhoe, 
 unsigned X_INTVL, unsigned X_NUMBER, bool tuningMode){
+    clock_t start_time = clock();
+    int time = 0;
     //inicializar subdatasets
     unordered_map<string, int> substring_to_index;
     unordered_map<int, string> index_to_substring;
@@ -73,8 +75,6 @@ unsigned X_INTVL, unsigned X_NUMBER, bool tuningMode){
 	double fitness_act=0;
     string best_chromosome = "";
 	unsigned generation = 0;		// current generation
-    clock_t start_time = clock();
-    int time = 0;
         
         do {
             algorithm.evolve();	// evolve the population for one generation
