@@ -1,0 +1,2 @@
+/home/shared/sisadapt3/bin/random_greedy -i /home/shared/sisadapt3/Proyecto_Sistemas_Adaptativos/FFMS_all_instances/200-800-076.txt -th 0.75 -t 10 -alpha 0.99
+134 13

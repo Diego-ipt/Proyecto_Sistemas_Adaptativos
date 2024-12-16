@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+#SBATCH -J MergeModelTh75-FFMSP # A single job name for the array
+#SBATCH -p main # Partition
+#SBATCH -n 1 # one core
+#--SBATCH-- -N 1 # on one node
+#--SBATCH-- -t 0-0:30:00 # Running time of 30 mins
+#--SBATCH-- --ntasks 4
+#SBATCH --mem 8G # Memory request of 7 GB
+#SBATCH --array=0-0
+#SBATCH -o  bin_outFile_%A_CONF_%a.out
+#SBATCH -e  bin_errFile_%A_CONF_%a.err
+
+#Declaring configurations
+declare -a CONF_BIN=(
+           " -pop_size 16 -pm 0.13 -elite 16 -max_error 47 -temp_pert 335.39 -temp_leap 1092.27 -cool_rate 0.94 -heat_rate 1.69 -iter_max 134 -N_parents 2 -n_part 120 " #  Tuning #
+
+        )
+##Binary problems
+
+#for i in {1..10}
+#do
+echo  /home/shared/sisadapt3/bin/MerMod -alg MerMod -input ${1} -th 0.75 -time 10 ${CONF_BIN[$SLURM_ARRAY_TASK_ID]} >"/home/shared/sisadapt3/Ejecuciones/MeModel/th0.75/${2}_${SLURM_ARRAY_TASK_ID}"/home/shared/sisadapt3/bin/MerMod -alg MerMod -input ${1} -th 0.75 -time 10 ${CONF_BIN[$SLURM_ARRAY_TASK_ID]} >>"/home/shared/sisadapt3/Ejecuciones/MeModel/th0.75/${2}_${SLURM_ARRAY_TASK_ID}"
+#done
