@@ -46,6 +46,8 @@ unsigned X_INTVL, unsigned X_NUMBER, bool tuningMode){
     vector<Subdataset> subdatasets_union=init_subdatasets(dataset, num_subdatasets, threshold, max_error, temperature_pert, temperature_leap, cooling_rate, heat_rate, iteraciones_max, substring_to_index, index_to_substring);
     // Ajustar el threshold en función de la longitud M
     const unsigned M = dataset[0].size();
+    threshold = threshold * M;
+    // Parámetros del BRKGA
     const unsigned n = M;		// size of chromosomes
 	const unsigned K = 1;		// number of independent populations
 	const unsigned MAXT = 1;	// number of threads for parallel decoding
