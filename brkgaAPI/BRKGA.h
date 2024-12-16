@@ -259,20 +259,19 @@ void BRKGA< Decoder, MTRand >::evolve(unsigned generations) {
 
 template< class Decoder, class MTRand >
 void BRKGA< Decoder, MTRand >::pushIndividuals_AGTC(vector<string> individuals, vector<double> fitness) {
-	std::int i=0;
+	unsigned i = 0;
 	for (const auto& individual : individuals) {
-		i++
 		std::vector<double> chromosome(n);
-		for (unsigned i = 0; i < n; ++i) {
-			if (solution.solucion[i] == 'A') chromosome[i] = 0.125;
-			else if (solution.solucion[i] == 'G') chromosome[i] = 0.375;
-			else if (solution.solucion[i] == 'T') chromosome[i] = 0.625;
-			else if (solution.solucion[i] == 'C') chromosome[i] = 0.875;
+		for (unsigned j = 0; j < n; ++j) {
+			if (individual[j] == 'A') chromosome[j] = 0.125;
+			else if (individual[j] == 'G') chromosome[j] = 0.375;
+			else if (individual[j] == 'T') chromosome[j] = 0.625;
+			else if (individual[j] == 'C') chromosome[j] = 0.875;
 		}
 		current[0]->pushChromosome(chromosome, fitness[i]);
+		++i;
 	}
 }
-
 
 template< class Decoder, class MTRand >
 void BRKGA< Decoder, MTRand >::exchangeElite(unsigned M) {
