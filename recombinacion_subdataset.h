@@ -71,7 +71,9 @@ unsigned X_INTVL, unsigned X_NUMBER, bool tuningMode){
         if(fitness_act < trunc(-1*algorithm.getBestFitness())) {
             fitness_act = trunc(-1*algorithm.getBestFitness());
             time = (clock() - start_time) / CLOCKS_PER_SEC;
-            cout << fitness_act << " " << time << endl;
+            if(!tuningMode){
+                cout << fitness_act << " " << time << endl;
+            }
         }
     }
 
