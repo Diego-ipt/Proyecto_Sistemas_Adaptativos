@@ -90,10 +90,10 @@ int main(int argc, char* argv[]) {
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> elapsed = end - start;
 
-    if(!tuningMode){
-        cout << "Best solution: " << result.solucion << endl;
-        cout << "Fitness: " << result.calidad << endl;
-        cout << "Elapsed time: " << elapsed.count() << " seconds" << endl;
-    }
+    // if(!tuningMode){
+    //     cout << "Best solution: " << result.solucion << endl;
+    //     cout << "Fitness: " << result.calidad << endl;
+    //     cout << "Elapsed time: " << elapsed.count() << " seconds" << endl;
+    // }
     return 0;
 }
