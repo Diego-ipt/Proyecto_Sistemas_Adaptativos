@@ -77,6 +77,7 @@
 #include <algorithm>
 #include <exception>
 #include <stdexcept>
+#include <vector>
 #include "Population.h"
 #include "MTRand.h"
 #include "Decoder.h"
@@ -258,7 +259,7 @@ void BRKGA< Decoder, MTRand >::evolve(unsigned generations) {
 
 template< class Decoder, class MTRand >
 void BRKGA< Decoder, MTRand >::pushIndividuals_AGTC(vector<string> individuals, vector<double> fitness) {
-	int i=0;
+	std::int i=0;
 	for (const auto& individual : individuals) {
 		i++
 		std::vector<double> chromosome(n);
