@@ -44,7 +44,7 @@ summary.data <- summarizeData(data=data, fun=average.function,
 #' For that we can use Friedman's test
 #' 
 
-alg.columns <- c("MHT", "GREEDY", "BRKGA")
+alg.columns <- c("MHT", "GREEDY", "BRKGA", "HYBRID")
 friedmanTest(data[, alg.columns])
 
 
