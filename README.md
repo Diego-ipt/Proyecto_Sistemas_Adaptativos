@@ -32,3 +32,28 @@ To recompile and run the program, type:
 	./api-usage
 	
 To modify any of the BRKGA parameters, edit the file api-usage.cpp and recompile the program.
+
+
+##Para compilar metaheuristica híbrida:
+g++ -o merge_model merge_model.cpp
+
+##Para ejecutar 
+./merge_model -alg <algorithm_name> -input <inputFileName> -th <threshold> -time <time> [optional parameters]
+
+[optional_parameters]: 
+  -pop_size <val>    	Population size
+  -pm <val>         	Parameter pm
+  -elite <val>		Number of elite individuals
+  -max_error <num>	Number of maximum errors allowed
+  -temp_pert <val>    	Temperature perturbation
+  -temp_leap <val>    	Temperature leap
+  -cool_rate <val>   	Cooling rate
+  -heat_rate <val>      Heat rate
+  -tuning <val>         Enable tuning mode
+  -iter_max <num>       Number of maximum interations
+  -N_parents <num>      Number of Parents for crossover
+  -n_part <num>        	Number of partitions in crossover
+
+
+
+  Los resultados de todos los algoritmos descritos anteriormente están en la carpeta ./results_export. Los logs de tuning están en la carpeta ./tuning_logs
