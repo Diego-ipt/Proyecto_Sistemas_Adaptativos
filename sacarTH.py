@@ -6,12 +6,12 @@ from collections import defaultdict
 csv_directory = "./results_export/resultadosIndividuales"  # Cambia esta ruta según tus necesidades
 
 # Directorio de salida para los archivos combinados
-output_directory = "./results_export"
+output_directory = "./results_export/resultadosPorTh"
 os.makedirs(output_directory, exist_ok=True)
 
 def crear_csv_por_threshold(csv_directory, output_directory):
     """
-    Crea un archivo .csv por cada threshold, combinando los resultados de BRKGA, GREEDY y MHT.
+    Crea un archivo .csv por cada threshold, combinando los resultados de BRKGA, GREEDY, MHT y HYBRID.
     """
     # Diccionario para agrupar datos por threshold
     threshold_data = defaultdict(lambda: defaultdict(dict))
@@ -21,7 +21,7 @@ def crear_csv_por_threshold(csv_directory, output_directory):
         if filename.endswith(".csv"):
             # Identificar algoritmo y threshold
             parts = filename.split("-")
-            algoritmo = parts[0].upper()  # BRKGA, GREEDY, etc.
+            algoritmo = parts[0].upper()  # BRKGA, GREEDY, MHT, HYBRID
             threshold = parts[1].replace(".csv", "")  # Ejemplo: 0.75
 
             filepath = os.path.join(csv_directory, filename)
@@ -43,14 +43,15 @@ def crear_csv_por_threshold(csv_directory, output_directory):
         with open(output_filepath, 'w', newline='') as outfile:
             writer = csv.writer(outfile)
             # Escribir encabezado
-            writer.writerow(["Archivo", "BRKGA", "GREEDY", "MHT"])
+            writer.writerow(["Archivo", "BRKGA", "GREEDY", "MHT", "HYBRID"])
             # Escribir datos por archivo
             for archivo, algoritmos in archivos.items():
                 writer.writerow([
                     archivo,
                     algoritmos.get("BRKGA", ""),
                     algoritmos.get("GREEDY", ""),
-                    algoritmos.get("MHT", "")
+                    algoritmos.get("MHT", ""),
+                    algoritmos.get("HYBRID", "")  # Añadido HYBRID
                 ])
         print(f"Archivo generado: {output_filepath}")
 

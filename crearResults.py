@@ -35,21 +35,22 @@ def procesar_csv_y_crear_dat(csv_directory, output_dat):
                         brkga = row[1]  # Columna BRKGA
                         greedy = row[2]  # Columna GREEDY
                         mht = row[3]  # Columna MHT
+                        hybrid = row[4]  # Nueva columna HYBRID
 
                         # Almacenar los resultados por clave (N, M, threshold)
-                        resultados[(nstr, length, threshold)].append((mht, greedy, brkga))
+                        resultados[(nstr, length, threshold)].append((mht, greedy, brkga, hybrid))
             except Exception as e:
                 print(f"Error al procesar {filepath}: {e}")
 
     # Escribir en el archivo .dat
     with open(output_dat, 'w') as datfile:
         # Escribir encabezado
-        datfile.write("inst\tnstr\tlength\tt\tMHT\tGREEDY\tBRKGA\n")
+        datfile.write("inst\tnstr\tlength\tt\tMHT\tGREEDY\tBRKGA\tHYBRID\n")
         # Escribir cada línea agrupada por N, M, t
         for (nstr, length, t), datos in resultados.items():
-            for i, (mht, greedy, brkga) in enumerate(datos):
+            for i, (mht, greedy, brkga, hybrid) in enumerate(datos):
                 inst = i % 100 + 1  # Reiniciar contador cada 100 instancias
-                datfile.write(f"{inst}\t{nstr}\t{length}\t{t}\t{mht}\t{greedy}\t{brkga}\n")
+                datfile.write(f"{inst}\t{nstr}\t{length}\t{t}\t{mht}\t{greedy}\t{brkga}\t{hybrid}\n")
 
     print(f"Archivo .dat generado en {output_dat}")
 

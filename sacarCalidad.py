@@ -2,10 +2,10 @@ import os
 import csv
 
 # Directorio con los archivos .txt
-directory = "./Ejecuciones/brkga/th0.75"
+directory = "./Ejecuciones/MeModel/th0.85"
 
 # Archivo CSV de salida
-output_csv = "brkga0.75.csv"
+output_csv = "hybrid-0.85.csv"
 
 def leer_ultima_linea(filepath):
     """Lee la última línea significativa de un archivo."""
