@@ -34,10 +34,12 @@ To recompile and run the program, type:
 To modify any of the BRKGA parameters, edit the file api-usage.cpp and recompile the program.
 
 
+Para la metaheurística híbrida se utilizó una combinación de la metaheurística de trayectoria (MHT) y una metaheurística poblacional (MHP). No se utilizó brkga como MHP, sino que se creó una solución con componentes poblacionales. 
+
 ##Para compilar metaheuristica híbrida:
 g++ -o merge_model merge_model.cpp
 
-##Para ejecutar 
+##Para ejecutar: 
 ./merge_model -alg <algorithm_name> -input <inputFileName> -th <threshold> -time <time> [optional parameters]
 
 [optional_parameters]: 
