@@ -1,0 +1,163 @@
+#------------------------------------------------------------------------------
+# irace: An implementation in R of (Elitist) Iterated Racing
+# Version: 3.5.6863679
+# Copyright (C) 2010-2020
+# Manuel Lopez-Ibanez     <manuel.lopez-ibanez@manchester.ac.uk>
+# Jeremie Dubois-Lacoste  
+# Leslie Perez Caceres    <leslie.perez.caceres@ulb.ac.be>
+#
+# This is free software, and you are welcome to redistribute it under certain
+# conditions.  See the GNU General Public License for details. There is NO
+# WARRANTY; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# irace builds upon previous code from the race package:
+#     race: Racing methods for the selection of the best
+#     Copyright (C) 2003 Mauro Birattari
+#------------------------------------------------------------------------------
+# installed at: /home/shared/sisadapt3/R/x86_64-pc-linux-gnu-library/3.6/irace
+# called with: 
+== irace == WARNING: A default scenario file '/home/shared/sisadapt3/tuning_sim_annealing/scenario.txt' has been found and will be read.
+batchmode 
+sge,pbs,torque,slurm,htcondor 
+# 2024-11-12 12:54:58 -03: Initialization
+# Elitist race
+# Elitist new instances: 1
+# Elitist limit: 2
+# nbIterations: 3
+# minNbSurvival: 3
+# nbParameters: 2
+# seed: 1732125079
+# confidence level: 0.95
+# budget: 1000
+# mu: 5
+# deterministic: FALSE
+
+# 2024-11-12 12:54:58 -03: Iteration 1 of 3
+# experimentsUsedSoFar: 0
+# remainingBudget: 1000
+# currentBudget: 333
+# nbConfigurations: 55
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|       Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+|x|          1|         55|          7|    -190.0000000|         55|00:04:04|   NA|  NA|    NA|
+|x|          2|         55|          7|    -145.0000000|        110|00:04:03|+0.00|0.50|0.4909|
+|x|          3|         55|         10|    -162.0000000|        165|00:04:06|-0.00|0.33|0.6710|
+|x|          4|         55|         10|    -146.5000000|        220|00:04:04|-0.00|0.25|0.7711|
+|=|          5|         55|         10|    -155.8000000|        275|00:04:04|+0.01|0.21|0.7962|
+|=|          6|         55|         10|    -146.5000000|        330|00:04:06|+0.01|0.18|0.6617|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          10    mean value:     -146.5000000
+Description of the best-so-far configuration:
+   .ID. temperature cooling_rate .PARENT.
+10   10         867         0.14       NA
+
+# 2024-11-12 13:19:27 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   temperature cooling_rate
+10         867         0.14
+7          462         0.19
+19         484         0.50
+# 2024-11-12 13:19:27 -03: Iteration 2 of 3
+# experimentsUsedSoFar: 330
+# remainingBudget: 670
+# currentBudget: 335
+# nbConfigurations: 50
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|       Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+|x|          7|         50|         10|    -100.0000000|         50|00:04:03|   NA|  NA|    NA|
+|x|          3|         50|         10|    -150.0000000|         97|00:04:03|+0.00|0.50|0.4900|
+|x|          1|         50|         10|    -162.0000000|        144|00:04:03|-0.07|0.29|0.7464|
+|x|          2|         50|         10|    -146.5000000|        191|00:04:03|-0.05|0.22|0.5365|
+|=|          6|         50|         10|    -137.2000000|        238|00:04:03|-0.03|0.17|0.4199|
+|=|          5|         50|         71|    -147.3333333|        285|00:04:05|+0.01|0.17|0.5047|
+|=|          4|         50|         78|    -140.2857143|        332|00:04:03|-0.01|0.14|0.5796|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          78    mean value:     -140.2857143
+Description of the best-so-far configuration:
+   .ID. temperature cooling_rate .PARENT.
+78   78         940         0.15       10
+
+# 2024-11-12 13:47:54 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   temperature cooling_rate
+78         940         0.15
+10         867         0.14
+91         500         0.21
+# 2024-11-12 13:47:54 -03: Iteration 3 of 3
+# experimentsUsedSoFar: 662
+# remainingBudget: 338
+# currentBudget: 338
+# nbConfigurations: 44
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|       Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+|x|          8|         44|         78|    -100.0000000|         44|00:04:03|   NA|  NA|    NA|
+|x|          4|         44|         78|    -100.0000000|         85|00:03:02|+0.00|0.50|0.4886|
+|x|          7|         44|         78|    -100.0000000|        126|00:03:06|+0.00|0.33|0.3258|
+|x|          3|         44|         78|    -125.0000000|        167|00:03:02|+0.11|0.33|0.4723|
+|-|          5|         30|         78|    -140.0000000|        208|00:03:04|-0.02|0.18|0.6084|
+|=|          6|         30|         78|    -133.3333333|        235|00:02:02|-0.02|0.15|0.5023|
+|=|          1|         30|         78|    -140.2857143|        262|00:02:05|+0.01|0.15|0.5498|
+|=|          2|         30|         78|    -135.2500000|        289|00:02:03|+0.00|0.13|0.4814|
+|-|          9|         16|         78|    -142.4444444|        319|00:03:03|+0.00|0.11|0.5229|
+|=|         10|         16|         78|    -146.4000000|        335|00:02:02|+0.02|0.11|0.5583|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          78    mean value:     -146.4000000
+Description of the best-so-far configuration:
+   .ID. temperature cooling_rate .PARENT.
+78   78         940         0.15       10
+
+# 2024-11-12 14:15:32 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    temperature cooling_rate
+78          940         0.15
+138         803         0.14
+91          500         0.21
+# 2024-11-12 14:15:32 -03: Stopped because there is not enough budget left to race more than the minimum (3)
+# You may either increase the budget or set 'minNbSurvival' to a lower value
+# Iteration: 4
+# nbIterations: 4
+# experimentsUsedSoFar: 997
+# timeUsed: 0
+# remainingBudget: 3
+# currentBudget: 3
+# number of elites: 3
+# nbConfigurations: 3
+# Total CPU user time: 49.346, CPU sys time: 41.468, Wall-clock time: 4833.771
+# Best configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    temperature cooling_rate
+78          940         0.15
+138         803         0.14
+91          500         0.21
+# Best configurations as commandlines (first number is the configuration ID; same order as above):
+78   -temperature 940 -cooling_rate 0.15
+138  -temperature 803 -cooling_rate 0.14
+91   -temperature 500 -cooling_rate 0.21
+
+
+# Testing of elite configurations: 1 
+# Testing iteration configurations: FALSE 
+# 2024-11-12 14:15:32 -03: No test instances, skip testing

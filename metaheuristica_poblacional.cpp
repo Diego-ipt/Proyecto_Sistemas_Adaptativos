@@ -11,15 +11,32 @@ using namespace std;
 int main(int argc, char* argv[]) {
 
 	//valores predeterminados. Hay que aplicar tuning 
-	unsigned p = 100;		// size of population -- puede variar
-	double pe = 0.10;		// fraction of population to be the elite-set -- puede variar
-	double pm = 0.10;		// fraction of population to be replaced by mutants -- puede variar
-	double rhoe = 0.70;	// probability that offspring inherit an allele from elite parent --puede variar
-	unsigned X_INTVL = 100;	// exchange best individuals at every 100 generations --puede variar
-	unsigned X_NUMBER = 2;	// exchange top 2 best --puede variar
+	// Threshold = 0.75
+	unsigned p = 453;       // size of population -- puede variar
+	double pe = 0.07;       // fraction of population to be the elite-set -- puede variar
+	double pm = 0.19;       // fraction of population to be replaced by mutants -- puede variar
+	double rhoe = 0.67;     // probability that offspring inherit an allele from elite parent -- puede variar
+	unsigned X_INTVL = 382; // exchange best individuals at every 100 generations -- puede variar
+	unsigned X_NUMBER = 9;  // exchange top 2 best -- puede variar
+	/* 
+	// Threshold = 0.80
+	unsigned p = 317;       // size of population -- puede variar
+	double pe = 0.27;       // fraction of population to be the elite-set -- puede variar
+	double pm = 0.06;       // fraction of population to be replaced by mutants -- puede variar
+	double rhoe = 0.58;     // probability that offspring inherit an allele from elite parent -- puede variar
+	unsigned X_INTVL = 374; // exchange best individuals at every 100 generations -- puede variar
+	unsigned X_NUMBER = 3;  // exchange top 2 best -- puede variar
+
+	// Threshold = 0.85
+	unsigned p = 404;       // size of population -- puede variar
+	double pe = 0.28;       // fraction of population to be the elite-set -- puede variar
+	double pm = 0.08;       // fraction of population to be replaced by mutants -- puede variar
+	double rhoe = 0.62;     // probability that offspring inherit an allele from elite parent -- puede variar
+	unsigned X_INTVL = 329; // exchange best individuals at every 100 generations -- puede variar
+	unsigned X_NUMBER = 5;  // exchange top 2 best -- puede variar
+	*/
 	int max_time_seconds = 10;	
 	bool tuningMode = false; // Default: no tuning
-
     // Verificar que se han proporcionado los argumentos mínimos obligatorios
     if (argc < 5 || string(argv[2]) != "-i" || string(argv[4]) != "-th") {
         cerr << "Uso: " << argv[0] << " <nombremetaheuristica> -i <instancia-problema> -th <threshold> [opciones]" << endl;
